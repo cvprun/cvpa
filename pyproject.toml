@@ -1,7 +1,56 @@
 [project]
 name = "cvpa"
-version = "0.1.0"
-description = "CVP Agent"
+dynamic = ["version"]
+description = "Computer Vision Player Agent"
 readme = "README.md"
+license = "MIT"
+authors = [
+    { name = "zer0", email = "osom8979@gmail.com" },
+]
+maintainers = [
+    { name = "zer0", email = "osom8979@gmail.com" },
+]
 requires-python = ">=3.14"
+keywords = []
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: Manufacturing",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Image Processing",
+    "Topic :: Scientific/Engineering :: Image Recognition",
+    "Topic :: Utilities",
+]
 dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/cvprun/cvpa"
+"GitHub: issues" = "https://github.com/cvprun/cvpa/issues"
+"GitHub: repo" = "https://github.com/cvprun/cvpa"
+
+[project.scripts]
+cvpa = "cvpa.main:main"
+
+[tool.hatch.version]
+path = "src/cvpa/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/cvpa"]
+
+[tool.hatch.build]
+exclude = [
+    "tester*",
+    "src/cvpa/assets/.gitignore",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
