@@ -67,7 +67,7 @@ fi
 
 print_message "black ${ARGS[*]}"
 
-"$ROOT_DIR/python" -m black "${ARGS[@]}" \
+uv run black "${ARGS[@]}" \
     "$ROOT_DIR/src/" \
     "$ROOT_DIR/tester/" \
     "$ROOT_DIR/main.py"

@@ -36,4 +36,4 @@ fi
 
 print_message "mypy ${ARGS[*]}"
 
-"$ROOT_DIR/python" -m mypy "${ARGS[@]}"
+uv run mypy "${ARGS[@]}"

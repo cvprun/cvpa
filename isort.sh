@@ -67,7 +67,7 @@ fi
 
 print_message "isort ${ARGS[*]}"
 
-"$ROOT_DIR/python" -m isort "${ARGS[@]}" \
+uv run isort "${ARGS[@]}" \
     "$ROOT_DIR/src/" \
     "$ROOT_DIR/tester/" \
     "$ROOT_DIR/main.py"

@@ -35,4 +35,4 @@ fi
 
 print_message "flake8 ${ARGS[*]}"
 
-"$ROOT_DIR/python" -m flake8 "${ARGS[@]}"
+uv run flake8 "${ARGS[@]}"
