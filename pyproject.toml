@@ -28,7 +28,27 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Image Recognition",
     "Topic :: Utilities",
 ]
-dependencies = []
+dependencies = [
+    "dotenv>=0.9.9",
+    "numpy>=2.4.3",
+    "pytest>=9.0.2",
+    "pyyaml>=6.0.3",
+    "uvloop>=0.22.1",
+]
+
+[dependency-groups]
+dev = [
+    "black",
+    "flake8",
+    "isort[colors]",
+    "lark",
+    "mypy",
+    "pytest",
+    "pytest-asyncio",
+    "pytest-cov",
+    "pyyaml",
+    "types-pyyaml",
+]
 
 [project.urls]
 Homepage = "https://github.com/cvprun/cvpa"
@@ -53,4 +73,3 @@ exclude = [
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
-

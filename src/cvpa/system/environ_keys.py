@@ -1,0 +1,18 @@
+# -*- coding: utf-8 -*-
+
+from typing import Final
+
+CVPA_NO_DOTENV: Final[str] = "CVPA_NO_DOTENV"
+CVPA_DOTENV_PATH: Final[str] = "CVPA_NO_DOTENV"
+
+CVPA_COLORED_LOGGING: Final[str] = "CVPA_COLORED_LOGGING"
+CVPA_SIMPLE_LOGGING: Final[str] = "CVPA_SIMPLE_LOGGING"
+
+CVPA_LOGGING_STEP: Final[str] = "CVPA_LOGGING_STEP"
+CVPA_LOGGING_SEVERITY: Final[str] = "CVPA_LOGGING_SEVERITY"
+
+CVPA_HOME: Final[str] = "CVPA_HOME"
+
+CVPA_USE_UVLOOP: Final[str] = "CVPA_USE_UVLOOP"
+CVPA_DEBUG: Final[str] = "CVPA_DEBUG"
+CVPA_VERBOSE: Final[str] = "CVPA_VERBOSE"
