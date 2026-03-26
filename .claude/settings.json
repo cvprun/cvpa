@@ -1,0 +1,80 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./black.sh --fix)",
+      "Bash(./black.sh)",
+      "Bash(./flake8.sh)",
+      "Bash(./isort.sh --fix)",
+      "Bash(./isort.sh)",
+      "Bash(./mypy.sh)",
+      "Bash(./pytest.sh)",
+      "Bash(find *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(grep *)",
+      "Bash(tree *)",
+      "WebFetch(domain:docs.anthropic.com)",
+      "WebFetch(domain:github.com)",
+      "WebSearch"
+    ],
+    "deny": [
+      "Bash(python *)",
+      "Bash(pip *)",
+      "Bash(npm *)",
+      "Bash(npx *)"
+    ],
+    "ask": [
+      "Bash(./python *)",
+      "Bash(./run *)",
+      "Bash(git commit *)"
+    ]
+  },
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "permission_prompt",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "notify-send 'CVPA - claude-code' 'Permission requests'"
+          }
+        ]
+      },
+      {
+        "matcher": "idle_prompt",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "notify-send 'CVPA - claude-code' 'Awaiting your input'"
+          }
+        ]
+      },
+      {
+        "matcher": "elicitation_dialog",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "notify-send 'CVPA - claude-code' 'MCP tool input required'"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "(Write|Edit)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./black.sh --fix",
+            "statusMessage": "Formatting code..."
+          },
+          {
+            "type": "command",
+            "command": "./isort.sh --fix",
+            "statusMessage": "Import sorting and fixing code..."
+          }
+        ]
+      }
+    ]
+  }
+}
