@@ -16,6 +16,8 @@ from cvpa.variables import SLOW_CALLBACK_DURATION
 
 def agent_main(args: Namespace) -> None:
     assert isinstance(args.uri, str)
+    assert isinstance(args.slug, str)
+    assert isinstance(args.token, str)
     assert isinstance(args.colored_logging, bool)
     assert isinstance(args.simple_logging, bool)
     assert isinstance(args.logging_step, int)
@@ -55,6 +57,8 @@ def agent_main(args: Namespace) -> None:
 
     app = AgentApplication(
         uri=args.uri,
+        slug=args.slug,
+        token=args.token,
         logging_step=args.logging_step,
         slow_callback_duration=SLOW_CALLBACK_DURATION,
         use_uvloop=args.use_uvloop,

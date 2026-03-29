@@ -9,6 +9,7 @@ from typing import Final, List, Optional, Sequence
 from cvpa.logging.logging import SEVERITIES, SEVERITY_NAME_INFO
 from cvpa.system.environ import get_typed_environ_value as get_eval
 from cvpa.system.environ_keys import (
+    CVPA_AGENT_TOKEN,
     CVPA_COLORED_LOGGING,
     CVPA_DEBUG,
     CVPA_DOTENV_PATH,
@@ -132,7 +133,13 @@ def add_agent_parser(subparsers) -> None:
         help="Same as ['-c', '-d', '-vv'] flags",
     )
 
-    parser.add_argument("uri", help="WebSocket server URI)")
+    parser.add_argument("uri", help="WebSocket server URI")
+    parser.add_argument("slug", help="Agent slug identifier")
+    parser.add_argument(
+        "--token",
+        default=get_eval(CVPA_AGENT_TOKEN, ""),
+        help="Agent authentication token (or set CVPA_AGENT_TOKEN)",
+    )
     parser.add_argument("opts", nargs=REMAINDER)
 
 
