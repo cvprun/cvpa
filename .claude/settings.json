@@ -66,12 +66,27 @@
           {
             "type": "command",
             "command": "./black.sh --fix",
-            "statusMessage": "Formatting code..."
+            "statusMessage": "Formatting with black"
           },
           {
             "type": "command",
             "command": "./isort.sh --fix",
-            "statusMessage": "Import sorting and fixing code..."
+            "statusMessage": "Sorting imports with isort"
+          },
+          {
+            "type": "command",
+            "command": "./flake8.sh",
+            "statusMessage": "Linting with flake8"
+          },
+          {
+            "type": "command",
+            "command": "./mypy.sh",
+            "statusMessage": "Type checking with mypy"
+          },
+          {
+            "type": "command",
+            "command": "./pytest.sh",
+            "statusMessage": "Running tests with pytest"
           }
         ]
       }
