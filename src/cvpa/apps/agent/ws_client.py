@@ -1,16 +1,13 @@
 # -*- coding: utf-8 -*-
 
-import json
 from asyncio import Event, get_running_loop, sleep
-from http.client import HTTPConnection, HTTPSConnection
 from typing import Final, Optional
-from urllib.parse import urlparse
 
 from websockets.asyncio.client import ClientConnection, connect
 
+from cvpa.client.ticket import request_ticket
 from cvpa.logging.loggers import agent_logger as logger
 
-CONNECT_PATH_TEMPLATE: Final[str] = "/api/agents/{slug}/connect"
 INITIAL_BACKOFF: Final[float] = 1.0
 MAX_BACKOFF: Final[float] = 60.0
 
@@ -23,34 +20,11 @@ class AgentWebSocketClient:
         self._stop_event = Event()
         self._ws: Optional[ClientConnection] = None
 
-    def _sync_request_ticket(self) -> str:
-        parsed = urlparse(self._uri)
-        path = CONNECT_PATH_TEMPLATE.format(slug=self._slug)
-        headers = {
-            "Authorization": f"Bearer {self._token}",
-            "Content-Type": "application/json",
-        }
-
-        conn: HTTPConnection
-        if parsed.scheme == "https":
-            conn = HTTPSConnection(parsed.netloc)
-        else:
-            conn = HTTPConnection(parsed.netloc)
-
-        try:
-            conn.request("POST", path, body="", headers=headers)
-            resp = conn.getresponse()
-            if resp.status != 200:
-                body = resp.read().decode(errors="replace")
-                raise RuntimeError(f"Ticket request failed ({resp.status}): {body}")
-            data = json.loads(resp.read())
-            return data["url"]
-        finally:
-            conn.close()
-
     async def _request_ticket(self) -> str:
         loop = get_running_loop()
-        return await loop.run_in_executor(None, self._sync_request_ticket)
+        return await loop.run_in_executor(
+            None, request_ticket, self._uri, self._slug, self._token
+        )
 
     async def _connect(self) -> None:
         ws_url = await self._request_ticket()
