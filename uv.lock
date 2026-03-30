@@ -90,7 +90,6 @@ source = { editable = "." }
 dependencies = [
     { name = "dotenv" },
     { name = "numpy" },
-    { name = "pytest" },
     { name = "pyyaml" },
     { name = "uvloop" },
     { name = "websockets" },
@@ -106,7 +105,6 @@ dev = [
     { name = "pytest" },
     { name = "pytest-asyncio" },
     { name = "pytest-cov" },
-    { name = "pyyaml" },
     { name = "types-pyyaml" },
 ]
 
@@ -114,7 +112,6 @@ dev = [
 requires-dist = [
     { name = "dotenv", specifier = ">=0.9.9" },
     { name = "numpy", specifier = ">=2.4.3" },
-    { name = "pytest", specifier = ">=9.0.2" },
     { name = "pyyaml", specifier = ">=6.0.3" },
     { name = "uvloop", specifier = ">=0.22.1" },
     { name = "websockets", specifier = ">=15.0" },
@@ -130,7 +127,6 @@ dev = [
     { name = "pytest" },
     { name = "pytest-asyncio" },
     { name = "pytest-cov" },
-    { name = "pyyaml" },
     { name = "types-pyyaml" },
 ]
 

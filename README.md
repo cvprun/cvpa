@@ -9,4 +9,4 @@
 ## License
 
 See the [LICENSE](./LICENSE) file for details. In summary,
-**osom-api** is licensed under the **MIT license**.
+**cvpa** is licensed under the **MIT license**.
