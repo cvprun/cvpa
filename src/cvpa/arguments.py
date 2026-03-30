@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from argparse import REMAINDER, ArgumentParser, Namespace, RawDescriptionHelpFormatter
+from argparse import ArgumentParser, Namespace, RawDescriptionHelpFormatter
 from functools import lru_cache
 from os import R_OK, access, getcwd
 from os.path import expanduser, isfile, join
@@ -18,10 +18,16 @@ from cvpa.system.environ_keys import (
     CVPA_LOGGING_STEP,
     CVPA_NO_DOTENV,
     CVPA_SIMPLE_LOGGING,
+    CVPA_SLOW_CALLBACK_DURATION,
     CVPA_USE_UVLOOP,
     CVPA_VERBOSE,
 )
-from cvpa.variables import CVPA_HOME_DIRNAME, DOTENV_LOCAL_FILENAME, LOGGING_STEP
+from cvpa.variables import (
+    CVPA_HOME_DIRNAME,
+    DOTENV_LOCAL_FILENAME,
+    LOGGING_STEP,
+    SLOW_CALLBACK_DURATION,
+)
 
 PROG: Final[str] = "cvpa"
 DESCRIPTION: Final[str] = "Computer Vision Player Agent"
@@ -77,6 +83,33 @@ def add_agent_parser(subparsers) -> None:
     )
     assert isinstance(parser, ArgumentParser)
 
+    parser.add_argument("uri", help="WebSocket server URI")
+    parser.add_argument("slug", help="Agent slug identifier")
+    parser.add_argument(
+        "--token",
+        default=get_eval(CVPA_AGENT_TOKEN, ""),
+        help="Agent authentication token (or set CVPA_AGENT_TOKEN)",
+    )
+
+
+def default_argument_parser() -> ArgumentParser:
+    parser = ArgumentParser(
+        prog=PROG,
+        description=DESCRIPTION,
+        epilog=EPILOG,
+        formatter_class=RawDescriptionHelpFormatter,
+    )
+
+    add_dotenv_arguments(parser)
+
+    home_path = cvp_home()
+    parser.add_argument(
+        "--home",
+        metavar="dir",
+        default=get_eval(CVPA_HOME, home_path),
+        help=f"{PROG}'s home directory (default: '{home_path}')",
+    )
+
     logging_group = parser.add_mutually_exclusive_group()
     logging_group.add_argument(
         "--colored-logging",
@@ -113,6 +146,15 @@ def add_agent_parser(subparsers) -> None:
         help="Replace the event loop with uvloop",
     )
     parser.add_argument(
+        "--slow-callback-duration",
+        type=float,
+        default=get_eval(CVPA_SLOW_CALLBACK_DURATION, SLOW_CALLBACK_DURATION),
+        help=(
+            "Slow callback duration threshold in seconds "
+            f"(default: {SLOW_CALLBACK_DURATION})"
+        ),
+    )
+    parser.add_argument(
         "--debug",
         "-d",
         action="store_true",
@@ -127,44 +169,16 @@ def add_agent_parser(subparsers) -> None:
         help="Be more verbose/talkative during the operation",
     )
     parser.add_argument(
-        "-D",
-        action="store_true",
-        default=False,
-        help="Same as ['-c', '-d', '-vv'] flags",
-    )
-
-    parser.add_argument("uri", help="WebSocket server URI")
-    parser.add_argument("slug", help="Agent slug identifier")
-    parser.add_argument(
-        "--token",
-        default=get_eval(CVPA_AGENT_TOKEN, ""),
-        help="Agent authentication token (or set CVPA_AGENT_TOKEN)",
-    )
-    parser.add_argument("opts", nargs=REMAINDER)
-
-
-def default_argument_parser() -> ArgumentParser:
-    parser = ArgumentParser(
-        prog=PROG,
-        description=DESCRIPTION,
-        epilog=EPILOG,
-        formatter_class=RawDescriptionHelpFormatter,
-    )
-
-    add_dotenv_arguments(parser)
-
-    home_path = cvp_home()
-    parser.add_argument(
-        "--home",
-        metavar="dir",
-        default=get_eval(CVPA_HOME, home_path),
-        help=f"{PROG}'s home directory (default: '{home_path}')",
-    )
-    parser.add_argument(
         "--version",
         "-V",
         action="version",
         version=version(),
+    )
+    parser.add_argument(
+        "-D",
+        action="store_true",
+        default=False,
+        help="Same as ['-c', '-d', '-vv'] flags",
     )
 
     subparsers = parser.add_subparsers(dest="cmd")
