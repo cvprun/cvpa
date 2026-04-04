@@ -134,6 +134,10 @@ MANIFEST
 ### asynctasks.vim ###
 .tasks
 
+### claude-code ###
+.claude/settings.local.json
+.mcp.json
+
 ###############
 ### Project ###
 .env*
