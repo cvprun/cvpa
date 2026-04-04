@@ -20,12 +20,12 @@ jobs:
         uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
-          cache-dependency-glob: "uv.lock"
+          cache-dependency-glob: 'uv.lock'
 
       - name: Setup Python 3.14
         uses: actions/setup-python@v5
         with:
-          python-version: "3.14"
+          python-version: '3.14'
           allow-prereleases: true
 
       - name: Install dependencies

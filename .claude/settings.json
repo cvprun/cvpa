@@ -17,17 +17,8 @@
       "WebFetch(domain:github.com)",
       "WebSearch"
     ],
-    "deny": [
-      "Bash(python *)",
-      "Bash(pip *)",
-      "Bash(npm *)",
-      "Bash(npx *)"
-    ],
-    "ask": [
-      "Bash(./python *)",
-      "Bash(./run *)",
-      "Bash(git commit *)"
-    ]
+    "deny": ["Bash(python *)", "Bash(pip *)", "Bash(npm *)", "Bash(npx *)"],
+    "ask": ["Bash(./python *)", "Bash(./run *)", "Bash(git commit *)"]
   },
   "hooks": {
     "Notification": [
