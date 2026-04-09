@@ -188,7 +188,7 @@ def add_default_colored_logging(
     name: Optional[str] = None,
     level=logging.DEBUG,
 ) -> None:
-    from cvp.logging.formatters.colored import ColoredFormatter
+    from cvpa.logging.formatters.colored import ColoredFormatter
 
     formatter = ColoredFormatter(
         fmt=DEFAULT_FORMAT,
