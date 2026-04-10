@@ -38,4 +38,4 @@ fi
 
 print_message "pytest ${ARGS[*]}"
 
-uv run pytest "${ARGS[@]}"
+uv --directory "$ROOT_DIR" run pytest "${ARGS[@]}"

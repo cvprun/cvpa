@@ -134,6 +134,11 @@ MANIFEST
 ### asynctasks.vim ###
 .tasks
 
+###################
+### vimspector ###
+.vimspector.json
+
+###################
 ### claude-code ###
 .claude/settings.local.json
 .mcp.json
