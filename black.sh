@@ -60,9 +60,9 @@ while [[ -n $1 ]]; do
     esac
 done
 
-ARGS=("--exclude=(.*_pb2(_grpc)?\.py(i)?$|/\.git|/\.venv)")
+ARGS=("--exclude=(.*_pb2(_grpc)?\.py(i)?$|/\.git|/\.venv)" "--target-version" "py313")
 if [[ $FIX_FLAG -eq 0 ]]; then
-    ARGS+=("--check" "--diff" "--color" "--target-version" "py313")
+    ARGS+=("--check" "--diff" "--color")
 fi
 
 print_message "black ${ARGS[*]}"
