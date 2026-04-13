@@ -49,5 +49,5 @@ class AgentApplication:
     def start(self) -> None:
         try:
             aio_run(self.on_main(), self._use_uvloop)
-        except KeyboardInterrupt, InterruptedError:
+        except (KeyboardInterrupt, InterruptedError):
             logger.warning("Interrupt signal detected")

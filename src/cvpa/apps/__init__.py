@@ -26,7 +26,7 @@ def run_app(cmd: str, args: Namespace) -> int:
         app(args)
     except CancelledError:
         logger.debug("An cancelled signal was detected")
-    except KeyboardInterrupt, InterruptedError:
+    except (KeyboardInterrupt, InterruptedError):
         logger.warning("An interrupt signal was detected")
     except SystemExit as e:
         assert isinstance(e.code, int)

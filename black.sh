@@ -62,7 +62,7 @@ done
 
 ARGS=("--exclude=(.*_pb2(_grpc)?\.py(i)?$|/\.git|/\.venv)")
 if [[ $FIX_FLAG -eq 0 ]]; then
-    ARGS+=("--check" "--diff" "--color")
+    ARGS+=("--check" "--diff" "--color" "--target-version" "py313")
 fi
 
 print_message "black ${ARGS[*]}"
