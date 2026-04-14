@@ -35,6 +35,10 @@ class WebSocketClient:
         if self._logger:
             self._logger.info("WebSocket connected")
 
+    async def send(self, data: Union[str, bytes]) -> None:
+        assert self._ws is not None
+        await self._ws.send(data)
+
     async def _listen(self) -> None:
         assert self._ws is not None
         async for message in self._ws:

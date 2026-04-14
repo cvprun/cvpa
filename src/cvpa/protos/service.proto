@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package cvpa.protos;
+
+service ManagedService {
+    rpc Channel(stream Envelope) returns (stream Envelope);
+    rpc Heartbeat(Pit) returns (Pat);
+    rpc Shutdown(Empty) returns (Empty);
+}
+
+message Envelope {
+    string type = 1;
+    string id = 2;
+    bytes payload = 3;
+    map<string, string> metadata = 4;
+}
+
+message Pit {
+    float delay = 1;
+}
+
+message Pat {
+    bool ok = 1;
+}
+
+message Empty {}

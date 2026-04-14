@@ -31,7 +31,9 @@ classifiers = [
 dependencies = [
     "coloredlogs>=15.0.1",
     "dotenv>=0.9.9",
+    "grpcio>=1.80.0",
     "numpy>=2.4.3",
+    "protobuf>=6.33.0",
     "pyyaml>=6.0.3",
     "uvloop>=0.22.1",
     "websockets>=15.0",
@@ -41,9 +43,11 @@ dependencies = [
 dev = [
     "black",
     "flake8",
+    "grpcio-tools>=1.80.0",
     "isort[colors]",
     "lark",
     "mypy",
+    "mypy-protobuf",
     "pytest",
     "pytest-asyncio",
     "pytest-cov",
