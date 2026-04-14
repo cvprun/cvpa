@@ -2,4 +2,4 @@
 
 ROOT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" || exit; pwd)
 
-uv --directory "$ROOT_DIR" "$ROOT_DIR/main.py" "$@"
+uv --directory "$ROOT_DIR" run "$ROOT_DIR/main.py" "$@"
