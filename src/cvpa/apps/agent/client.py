@@ -8,7 +8,7 @@ from cvpa.ws.client import WebSocketClient
 from cvpa.ws.handler import MessageDispatcher
 
 
-class AgentWebSocketClient:
+class AgentClient:
     def __init__(self, uri: str, slug: str, token: str) -> None:
         self._uri = uri
         self._slug = slug

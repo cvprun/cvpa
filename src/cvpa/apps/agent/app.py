@@ -3,7 +3,7 @@
 from asyncio import get_running_loop
 
 from cvpa.aio.run import aio_run
-from cvpa.apps.agent.ws_client import AgentWebSocketClient
+from cvpa.apps.agent.client import AgentClient
 from cvpa.logging.loggers import agent_logger as logger
 from cvpa.variables import LOGGING_STEP, SLOW_CALLBACK_DURATION
 
@@ -28,7 +28,7 @@ class AgentApplication:
         self._use_uvloop = use_uvloop
         self._debug = debug
         self._verbose = verbose
-        self._ws_client = AgentWebSocketClient(uri, slug, token)
+        self._client = AgentClient(uri, slug, token)
 
     async def on_main(self) -> None:
         logger.info(f"Starting agent application: {self._uri}")
@@ -38,12 +38,12 @@ class AgentApplication:
         loop.set_debug(self._debug)
 
         try:
-            await self._ws_client.start()
+            await self._client.start()
         except Exception as e:
             logger.error(f"Agent runtime error: {e}")
             raise
         finally:
-            await self._ws_client.stop()
+            await self._client.stop()
             logger.info("Agent application stopped")
 
     def start(self) -> None:
