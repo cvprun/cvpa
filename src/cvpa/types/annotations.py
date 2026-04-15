@@ -4,7 +4,7 @@ import typing
 
 if hasattr(typing, "_AnnotatedAlias"):
     AnnotatedAlias = typing._AnnotatedAlias  # noqa
-else:
+else:  # nocov
     import typing_extensions
 
     if hasattr(typing_extensions, "_AnnotatedAlias"):

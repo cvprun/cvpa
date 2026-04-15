@@ -18,5 +18,5 @@ def _fake_override(func) -> Union[_DecoratorMethod, _WrappedMethod]:
 
 try:
     from overrides import override
-except ImportError:
+except ImportError:  # nocov
     override = _fake_override  # type: ignore[assignment]

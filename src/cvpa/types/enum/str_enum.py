@@ -32,5 +32,5 @@ class _StrEnum(str, Enum):
 
 if sys.version_info[:2] >= (3, 11):
     from enum import StrEnum  # noqa
-else:
+else:  # nocov
     StrEnum = _StrEnum

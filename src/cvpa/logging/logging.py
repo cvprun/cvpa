@@ -136,7 +136,7 @@ def convert_printable_level(level: Union[str, int]) -> str:
             return "OverNotSet"
         if level == logging.NOTSET:
             return "NotSet"
-    return str(level)
+    return str(level)  # nocov
 
 
 def set_root_level(level: Union[str, int]) -> None:

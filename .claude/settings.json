@@ -14,6 +14,8 @@
       "Bash(grep *)",
       "Bash(tree *)",
       "WebFetch(domain:docs.anthropic.com)",
+      "WebFetch(domain:docs.ros.org)",
+      "WebFetch(domain:docs.ros2.org)",
       "WebFetch(domain:github.com)",
       "WebSearch"
     ],

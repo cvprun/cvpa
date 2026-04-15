@@ -4,7 +4,7 @@ import os
 import sys
 
 
-def get_page_size_with_win32() -> int:
+def get_page_size_with_win32() -> int:  # nocov
     import ctypes
 
     class SystemInfo(ctypes.Structure):

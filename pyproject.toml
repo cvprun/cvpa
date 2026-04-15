@@ -48,6 +48,7 @@ dev = [
     "lark",
     "mypy",
     "mypy-protobuf",
+    "overrides>=7.7.0",
     "pytest",
     "pytest-asyncio",
     "pytest-cov",

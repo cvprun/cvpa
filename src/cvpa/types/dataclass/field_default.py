@@ -37,5 +37,5 @@ def get_field_default(cls: Union[_T, Type[_T]], key: _Key) -> _Key:
         return f.default
     elif f.default is MISSING and f.default_factory is not MISSING:
         return f.default_factory()
-    else:
+    else:  # nocov
         assert False, "Cannot specify both `default` and `default_factory`"

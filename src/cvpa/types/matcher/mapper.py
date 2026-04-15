@@ -69,7 +69,7 @@ class TypesMatcherMapper(TypesMatcherDict):
                 return self._callback.on_float_data(data, extra)
             case int():
                 return self._callback.on_int_data(data, extra)
-            case bool():
+            case bool():  # nocov
                 return self._callback.on_bool_data(data, extra)
             case str():
                 return self._callback.on_str_data(data, extra)

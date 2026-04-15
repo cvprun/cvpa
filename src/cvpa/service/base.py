@@ -15,14 +15,14 @@ class ManagedService(ABC):
         return self._name
 
     @abstractmethod
-    async def start(self) -> None: ...
+    async def start(self) -> None: ...  # nocov
 
     @abstractmethod
-    async def stop(self) -> None: ...
+    async def stop(self) -> None: ...  # nocov
 
     @abstractmethod
-    async def send(self, data: dict) -> None: ...
+    async def send(self, data: dict) -> None: ...  # nocov
 
     @property
     @abstractmethod
-    def is_alive(self) -> bool: ...
+    def is_alive(self) -> bool: ...  # nocov

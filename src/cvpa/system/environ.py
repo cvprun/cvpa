@@ -11,15 +11,15 @@ DefaultT = TypeVar("DefaultT", str, bool, int, float)
 
 # fmt: off
 @overload
-def get_typed_environ_value(key: str) -> Optional[str]: ...
+def get_typed_environ_value(key: str) -> Optional[str]: ...  # nocov
 @overload
-def get_typed_environ_value(key: str, default: str) -> str: ...
+def get_typed_environ_value(key: str, default: str) -> str: ...  # nocov
 @overload
-def get_typed_environ_value(key: str, default: bool) -> bool: ...
+def get_typed_environ_value(key: str, default: bool) -> bool: ...  # nocov
 @overload
-def get_typed_environ_value(key: str, default: int) -> int: ...
+def get_typed_environ_value(key: str, default: int) -> int: ...  # nocov
 @overload
-def get_typed_environ_value(key: str, default: float) -> float: ...
+def get_typed_environ_value(key: str, default: float) -> float: ...  # nocov
 # fmt: on
 
 

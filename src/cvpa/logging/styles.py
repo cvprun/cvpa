@@ -45,10 +45,10 @@ class GuiLoggingStyle:
         self.level_name = LEVEL_TO_NAME_MAPPING[value]
 
     @overload
-    def get_level_color(self, level: int) -> Optional[RGBA]: ...
+    def get_level_color(self, level: int) -> Optional[RGBA]: ...  # nocov
 
     @overload
-    def get_level_color(self, level: int, default: RGBA) -> RGBA: ...
+    def get_level_color(self, level: int, default: RGBA) -> RGBA: ...  # nocov
 
     def get_level_color(
         self,
