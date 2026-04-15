@@ -220,6 +220,36 @@ class TypesMatcherMapperTestCase(TestCase):
         self.mapper("test")
         self.assertEqual(self.spy.last_called, "str")
 
+    def test_ordered_dict_dispatches_to_dict(self):
+        from collections import OrderedDict
+
+        self.mapper(OrderedDict())
+        self.assertEqual(self.spy.last_called, "dict")
+
+    def test_deque_dispatches_to_iterable(self):
+        from collections import deque
+
+        spy = SpyMatcher()
+        mapper = TypesMatcherMapper(spy)
+        mapper(deque())
+        self.assertEqual(spy.last_called, "iterable")
+
+    def test_dataclass_class_dispatches(self):
+        @dataclass
+        class Pt:
+            x: int = 0
+
+        spy = SpyMatcher()
+        mapper = TypesMatcherMapper(spy)
+        mapper(Pt)
+        self.assertEqual(spy.last_called, "dataclass")
+
+    def test_builtin_callable_dispatches_to_unknown(self):
+        spy = SpyMatcher()
+        mapper = TypesMatcherMapper(spy)
+        mapper(sum)
+        self.assertEqual(spy.last_called, "unknown")
+
     def test_match_fallback_all_basic_types(self):
         """Test match statement fallback for all basic types (empty mapper)."""
         spy = SpyMatcher()

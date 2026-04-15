@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from enum import auto, unique
 from unittest import TestCase, main
 
 from cvpa.types.enum.str_enum import _StrEnum
@@ -57,6 +58,25 @@ class StrEnumTestCase(TestCase):
 
             class BadEnum(_StrEnum):
                 X = b"hello", "utf-8", 123  # type: ignore
+
+    def test_auto_generates_lowercase(self):
+        @unique
+        class AutoEnum(_StrEnum):
+            A = auto()
+            B = auto()
+            CamelCase = auto()
+
+        self.assertEqual("a", AutoEnum.A)
+        self.assertEqual("b", AutoEnum.B)
+        self.assertEqual("camelcase", AutoEnum.CamelCase)
+
+    def test_unique_rejects_duplicate(self):
+        with self.assertRaises(ValueError):
+
+            @unique
+            class DupEnum(_StrEnum):
+                a = auto()
+                b = "a"
 
 
 if __name__ == "__main__":

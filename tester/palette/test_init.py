@@ -69,25 +69,25 @@ class LoadPaletteTestCase(TestCase):
 
 class PaletteLoadersTestCase(TestCase):
     def test_basic(self):
-        self.assertGreater(len(basic_palette()), 0)
+        self.assertEqual(16, len(basic_palette()))
 
     def test_css4(self):
-        self.assertGreater(len(css4_palette()), 0)
+        self.assertEqual(148, len(css4_palette()))
 
     def test_extended(self):
-        self.assertGreater(len(extended_palette()), 0)
+        self.assertEqual(140, len(extended_palette()))
 
     def test_flat(self):
-        self.assertGreater(len(flat_palette()), 0)
+        self.assertEqual(240, len(flat_palette()))
 
     def test_tableau(self):
-        self.assertGreater(len(tableau_palette()), 0)
+        self.assertEqual(10, len(tableau_palette()))
 
     def test_vga(self):
-        self.assertGreater(len(vga_palette()), 0)
+        self.assertEqual(16, len(vga_palette()))
 
     def test_xkcd(self):
-        self.assertGreater(len(xkcd_palette()), 0)
+        self.assertEqual(938, len(xkcd_palette()))
 
 
 class GlobalPaletteTestCase(TestCase):
@@ -96,21 +96,52 @@ class GlobalPaletteTestCase(TestCase):
         self.assertEqual(len(m), 7)
 
     def test_registered_keys(self):
-        keys = registered_palette_keys()
-        self.assertEqual(len(keys), 7)
+        expect_names = {"basic", "css4", "extended", "flat", "tableau", "vga", "xkcd"}
+        actual_names = set(registered_palette_keys())
+        self.assertSetEqual(expect_names, actual_names)
 
     def test_registered_count(self):
-        count = registered_color_count()
-        self.assertGreater(count, 0)
+        expect_count = sum(
+            (
+                len(basic_palette()),
+                len(css4_palette()),
+                len(extended_palette()),
+                len(flat_palette()),
+                len(tableau_palette()),
+                len(vga_palette()),
+                len(xkcd_palette()),
+            )
+        )
+        self.assertEqual(expect_count, registered_color_count())
 
 
 class FindNamedColorTestCase(TestCase):
     def test_with_palette_prefix(self):
-        result = find_named_color("basic:BLACK")
-        self.assertIsNotNone(result)
+        from cvpa.palette import basic
+
+        result = find_named_color("basic:WHITE")
+        self.assertTupleEqual(basic.WHITE, result)
 
     def test_without_prefix(self):
-        result = find_named_color("RED")
+        from cvpa.palette import extended
+
+        result = find_named_color(" dimgray ")
+        self.assertTupleEqual(extended.DIMGRAY, result)
+
+    def test_with_spaces(self):
+        from cvpa.palette import extended
+
+        result = find_named_color("extended : beige")
+        self.assertTupleEqual(extended.BEIGE, result)
+
+    def test_xkcd_with_space(self):
+        from cvpa.palette import xkcd
+
+        result = find_named_color("xkcd: nasty green")
+        self.assertTupleEqual(xkcd.NASTY_GREEN, result)
+
+    def test_case_insensitive(self):
+        result = find_named_color("basic:white")
         self.assertIsNotNone(result)
 
     def test_unknown_palette(self):
