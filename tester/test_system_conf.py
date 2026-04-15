@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from unittest import TestCase, main
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 from cvpa.system.conf import get_page_size, get_page_size_with_unix
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from datetime import datetime, timedelta
-from logging import DEBUG, Logger, getLogger
+from logging import Logger, getLogger
 from unittest import TestCase, main
 from unittest.mock import MagicMock
 

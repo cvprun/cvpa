@@ -3,8 +3,6 @@
 from unittest import TestCase, main
 from unittest.mock import AsyncMock, MagicMock, patch
 
-import pytest
-
 from cvpa.service.manager import ServiceManager
 
 

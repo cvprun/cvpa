@@ -12,7 +12,8 @@ class TypesMatcherInterfaceTestCase(TestCase):
             TypesMatcherInterface()  # type: ignore[abstract]
 
     def test_abstract_methods_raise(self):
-        """Directly call abstract methods via __dict__ to cover raise NotImplementedError."""
+        """Directly call abstract methods via __dict__
+        to cover raise NotImplementedError."""
         from datetime import date, datetime, time, timedelta
         from enum import Enum
         from pathlib import Path

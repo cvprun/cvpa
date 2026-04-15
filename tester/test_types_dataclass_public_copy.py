@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from copy import copy, deepcopy
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from unittest import TestCase, main
 
 from cvpa.types.dataclass.public_copy import public_copy, public_deepcopy
@@ -42,13 +42,13 @@ class PublicDeepCopyTestCase(TestCase):
     def test_deepcopy_with_memo(self):
         obj = DeepCopySample(name="test")
         memo = {}
-        result = obj.__deepcopy__(memo)
+        obj.__deepcopy__(memo)
         self.assertIn(id(obj), memo)
 
     def test_deepcopy_without_memo(self):
         obj = DeepCopySample(name="test")
-        result = obj.__deepcopy__(None)
-        self.assertEqual(result.name, "world")
+        copied = obj.__deepcopy__(None)
+        self.assertEqual(copied.name, "world")
 
 
 if __name__ == "__main__":

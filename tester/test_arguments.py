@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import tempfile
-from os.path import isfile
 from unittest import TestCase, main
 from unittest.mock import patch
 
