@@ -15,13 +15,13 @@ def parse_agent_token(combined: str) -> Tuple[str, str]:
     sep_idx = rest.find("_")
     if sep_idx == -1:
         raise ValueError(
-            "Agent token must be in the form "
-            f"'{AGENT_TOKEN_PREFIX}{{slug}}_{{token}}'"
+            "Agent token must be in the form " f"'{AGENT_TOKEN_PREFIX}{{hex}}_{{slug}}'"
         )
 
-    slug = rest[:sep_idx]
-    token = rest[sep_idx + 1 :]
-    if not slug or not token:
-        raise ValueError("Agent token must contain non-empty slug and token parts")
+    hex_part = rest[:sep_idx]
+    slug = rest[sep_idx + 1 :]
+    if not hex_part or not slug:
+        raise ValueError("Agent token must contain non-empty hex and slug parts")
 
+    token = f"{AGENT_TOKEN_PREFIX}{hex_part}"
     return slug, token

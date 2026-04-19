@@ -91,7 +91,7 @@ def add_agent_parser(subparsers) -> None:
         nargs="?",
         default=get_eval(CVPA_AGENT_TOKEN, ""),
         help=(
-            f"Combined agent token in the form '{AGENT_TOKEN_PREFIX}{{slug}}_{{token}}'"
+            f"Combined agent token in the form '{AGENT_TOKEN_PREFIX}{{hex}}_{{slug}}'"
             " (or set CVPA_AGENT_TOKEN)"
         ),
     )

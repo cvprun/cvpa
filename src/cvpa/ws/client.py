@@ -56,8 +56,10 @@ class WebSocketClient:
                     break
                 if self._logger:
                     self._logger.warning(
-                        f"Connection lost: {e}, reconnecting in {backoff}s"
+                        f"Connection lost ({type(e).__name__}): {e}, "
+                        f"reconnecting in {backoff}s"
                     )
+                    self._logger.debug("Connection lost traceback", exc_info=True)
                 await sleep(backoff)
                 backoff = min(backoff * 2, MAX_BACKOFF)
 

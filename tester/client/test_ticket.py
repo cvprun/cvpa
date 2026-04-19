@@ -1,20 +1,28 @@
 # -*- coding: utf-8 -*-
 
 import json
+from logging import DEBUG, getLogger
 from unittest import TestCase, main
 from unittest.mock import MagicMock, patch
 
-from cvpa.client.ticket import request_ticket
+from cvpa.client.ticket import _mask_token, _truncate, request_ticket
+
+
+def _make_resp(status, body, content_type="application/json"):
+    mock_resp = MagicMock()
+    mock_resp.status = status
+    mock_resp.read.return_value = body
+    mock_resp.getheader.return_value = content_type
+    return mock_resp
 
 
 class RequestTicketTestCase(TestCase):
     @patch("cvpa.client.ticket.HTTPSConnection")
     def test_https(self, mock_conn_cls):
         mock_conn = MagicMock()
-        mock_resp = MagicMock()
-        mock_resp.status = 200
-        mock_resp.read.return_value = json.dumps({"url": "wss://ws"}).encode()
-        mock_conn.getresponse.return_value = mock_resp
+        mock_conn.getresponse.return_value = _make_resp(
+            200, json.dumps({"url": "wss://ws"}).encode()
+        )
         mock_conn_cls.return_value = mock_conn
 
         result = request_ticket("https://example.com", "slug1", "token1")
@@ -25,10 +33,9 @@ class RequestTicketTestCase(TestCase):
     @patch("cvpa.client.ticket.HTTPConnection")
     def test_http(self, mock_conn_cls):
         mock_conn = MagicMock()
-        mock_resp = MagicMock()
-        mock_resp.status = 200
-        mock_resp.read.return_value = json.dumps({"url": "ws://ws"}).encode()
-        mock_conn.getresponse.return_value = mock_resp
+        mock_conn.getresponse.return_value = _make_resp(
+            200, json.dumps({"url": "ws://ws"}).encode()
+        )
         mock_conn_cls.return_value = mock_conn
 
         result = request_ticket("http://example.com", "slug1", "token1")
@@ -38,15 +45,70 @@ class RequestTicketTestCase(TestCase):
     @patch("cvpa.client.ticket.HTTPConnection")
     def test_error_status(self, mock_conn_cls):
         mock_conn = MagicMock()
-        mock_resp = MagicMock()
-        mock_resp.status = 403
-        mock_resp.read.return_value = b"Forbidden"
-        mock_conn.getresponse.return_value = mock_resp
+        mock_conn.getresponse.return_value = _make_resp(
+            403, b"Forbidden", content_type="text/plain"
+        )
         mock_conn_cls.return_value = mock_conn
 
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(RuntimeError) as ctx:
             request_ticket("http://example.com", "slug1", "token1")
+        self.assertIn("Forbidden", str(ctx.exception))
         mock_conn.close.assert_called_once()
+
+    @patch("cvpa.client.ticket.HTTPConnection")
+    def test_custom_logger_debug(self, mock_conn_cls):
+        mock_conn = MagicMock()
+        mock_conn.getresponse.return_value = _make_resp(
+            200, json.dumps({"url": "ws://ws"}).encode()
+        )
+        mock_conn_cls.return_value = mock_conn
+
+        logger = getLogger("test.cvpa.ticket")
+        logger.setLevel(DEBUG)
+        with self.assertLogs(logger, level="DEBUG") as cm:
+            request_ticket(
+                "http://example.com",
+                "slug1",
+                "abcd1234efgh5678",
+                logger=logger,
+            )
+        joined = "\n".join(cm.output)
+        self.assertIn("POST http://example.com/api/agents/slug1/connect", joined)
+        self.assertIn("abcd...5678", joined)
+        self.assertNotIn("abcd1234efgh5678", joined)
+        self.assertIn("status=200", joined)
+
+    @patch("cvpa.client.ticket.HTTPConnection")
+    def test_error_truncates_large_body(self, mock_conn_cls):
+        mock_conn = MagicMock()
+        large_body = ("X" * 2000).encode()
+        mock_conn.getresponse.return_value = _make_resp(
+            500, large_body, content_type="text/html"
+        )
+        mock_conn_cls.return_value = mock_conn
+
+        with self.assertRaises(RuntimeError) as ctx:
+            request_ticket("http://example.com", "slug1", "token1")
+        self.assertIn("truncated", str(ctx.exception))
+
+
+class MaskTokenTestCase(TestCase):
+    def test_short_token_masked_entirely(self):
+        self.assertEqual(_mask_token("abc"), "***")
+        self.assertEqual(_mask_token("12345678"), "***")
+
+    def test_long_token_keeps_edges(self):
+        self.assertEqual(_mask_token("abcdefghij"), "abcd...ghij")
+
+
+class TruncateTestCase(TestCase):
+    def test_short_unchanged(self):
+        self.assertEqual(_truncate("hello", limit=10), "hello")
+
+    def test_long_truncated(self):
+        result = _truncate("x" * 20, limit=5)
+        self.assertTrue(result.startswith("xxxxx"))
+        self.assertIn("truncated", result)
 
 
 if __name__ == "__main__":

@@ -7,30 +7,30 @@ from cvpa.apps.agent.token import parse_agent_token
 
 class ParseAgentTokenTestCase(TestCase):
     def test_valid(self):
-        slug, token = parse_agent_token("cvp_myslug_mytoken")
+        slug, token = parse_agent_token("cvp_abc123_myslug")
         self.assertEqual(slug, "myslug")
-        self.assertEqual(token, "mytoken")
+        self.assertEqual(token, "cvp_abc123")
 
-    def test_token_contains_underscores(self):
-        slug, token = parse_agent_token("cvp_myslug_tok_en_parts")
-        self.assertEqual(slug, "myslug")
-        self.assertEqual(token, "tok_en_parts")
+    def test_slug_contains_underscores(self):
+        slug, token = parse_agent_token("cvp_deadbeef_slug_with_parts")
+        self.assertEqual(slug, "slug_with_parts")
+        self.assertEqual(token, "cvp_deadbeef")
 
     def test_missing_prefix(self):
         with self.assertRaises(ValueError):
-            parse_agent_token("myslug_mytoken")
+            parse_agent_token("abc123_myslug")
 
     def test_missing_separator(self):
         with self.assertRaises(ValueError):
-            parse_agent_token("cvp_onlyslug")
+            parse_agent_token("cvp_onlyhex")
+
+    def test_empty_hex(self):
+        with self.assertRaises(ValueError):
+            parse_agent_token("cvp__myslug")
 
     def test_empty_slug(self):
         with self.assertRaises(ValueError):
-            parse_agent_token("cvp__mytoken")
-
-    def test_empty_token(self):
-        with self.assertRaises(ValueError):
-            parse_agent_token("cvp_myslug_")
+            parse_agent_token("cvp_abc123_")
 
     def test_empty_string(self):
         with self.assertRaises(ValueError):

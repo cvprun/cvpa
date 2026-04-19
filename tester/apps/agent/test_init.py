@@ -17,13 +17,13 @@ class AgentMainTestCase(TestCase):
             debug=False,
             verbose=0,
             uri="ws://test",
-            token="cvp_slug1_token1",
+            token="cvp_abc123_myslug",
         )
         agent_main(args)
         mock_app_cls.assert_called_once()
         kwargs = mock_app_cls.call_args.kwargs
-        self.assertEqual(kwargs["slug"], "slug1")
-        self.assertEqual(kwargs["token"], "token1")
+        self.assertEqual(kwargs["slug"], "myslug")
+        self.assertEqual(kwargs["token"], "cvp_abc123")
         mock_app_cls.return_value.start.assert_called_once()
 
     def test_agent_main_invalid_token(self):
