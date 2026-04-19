@@ -17,12 +17,29 @@ class AgentMainTestCase(TestCase):
             debug=False,
             verbose=0,
             uri="ws://test",
-            slug="slug1",
-            token="token1",
+            token="cvp_slug1_token1",
         )
         agent_main(args)
         mock_app_cls.assert_called_once()
+        kwargs = mock_app_cls.call_args.kwargs
+        self.assertEqual(kwargs["slug"], "slug1")
+        self.assertEqual(kwargs["token"], "token1")
         mock_app_cls.return_value.start.assert_called_once()
+
+    def test_agent_main_invalid_token(self):
+        from cvpa.apps.agent import agent_main
+
+        args = Namespace(
+            logging_step=1000,
+            use_uvloop=False,
+            slow_callback_duration=0.05,
+            debug=False,
+            verbose=0,
+            uri="ws://test",
+            token="invalid_token",
+        )
+        with self.assertRaises(ValueError):
+            agent_main(args)
 
 
 if __name__ == "__main__":

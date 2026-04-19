@@ -2,6 +2,8 @@
 
 from argparse import Namespace
 
+from cvpa.apps.agent.token import parse_agent_token
+
 
 def agent_main(args: Namespace) -> None:
     assert isinstance(args.logging_step, int)
@@ -10,8 +12,9 @@ def agent_main(args: Namespace) -> None:
     assert isinstance(args.debug, bool)
     assert isinstance(args.verbose, int)
     assert isinstance(args.uri, str)
-    assert isinstance(args.slug, str)
     assert isinstance(args.token, str)
+
+    slug, token = parse_agent_token(args.token)
 
     # [IMPORTANT]
     # Do not change the import order!
@@ -19,8 +22,8 @@ def agent_main(args: Namespace) -> None:
 
     app = AgentApplication(
         uri=args.uri,
-        slug=args.slug,
-        token=args.token,
+        slug=slug,
+        token=token,
         logging_step=args.logging_step,
         slow_callback_duration=args.slow_callback_duration,
         use_uvloop=args.use_uvloop,

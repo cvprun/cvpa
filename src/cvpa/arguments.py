@@ -24,6 +24,7 @@ from cvpa.system.environ_keys import (
     CVPA_VERBOSE,
 )
 from cvpa.variables import (
+    AGENT_TOKEN_PREFIX,
     CVPA_HOME_DIRNAME,
     DEFAULT_CVPA_URL,
     DOTENV_LOCAL_FILENAME,
@@ -85,7 +86,15 @@ def add_agent_parser(subparsers) -> None:
     )
     assert isinstance(parser, ArgumentParser)
 
-    parser.add_argument("slug", help="Agent slug identifier")
+    parser.add_argument(
+        "token",
+        nargs="?",
+        default=get_eval(CVPA_AGENT_TOKEN, ""),
+        help=(
+            f"Combined agent token in the form '{AGENT_TOKEN_PREFIX}{{slug}}_{{token}}'"
+            " (or set CVPA_AGENT_TOKEN)"
+        ),
+    )
     parser.add_argument(
         "--uri",
         default=get_eval(CVPA_AGENT_URL, DEFAULT_CVPA_URL),
@@ -93,11 +102,6 @@ def add_agent_parser(subparsers) -> None:
             "Base URL prefix of the CVPA service "
             f"(default: '{DEFAULT_CVPA_URL}', or set CVPA_AGENT_URL)"
         ),
-    )
-    parser.add_argument(
-        "--token",
-        default=get_eval(CVPA_AGENT_TOKEN, ""),
-        help="Agent authentication token (or set CVPA_AGENT_TOKEN)",
     )
 
 
@@ -235,12 +239,35 @@ def _remove_dotenv_attrs(namespace: Namespace) -> Namespace:
     return namespace
 
 
+def _inject_default_subcommand(
+    cmdline: Optional[List[str]],
+) -> Optional[List[str]]:
+    if cmdline is None:
+        from sys import argv
+
+        args_list = list(argv[1:])
+    else:
+        args_list = list(cmdline)
+
+    if CMD_AGENT in args_list:
+        return args_list
+
+    for i, arg in enumerate(args_list):
+        if arg.startswith(AGENT_TOKEN_PREFIX):
+            args_list.insert(i, CMD_AGENT)
+            return args_list
+
+    return args_list
+
+
 def get_default_arguments(
     cmdline: Optional[List[str]] = None,
     namespace: Optional[Namespace] = None,
 ) -> Namespace:
     # [IMPORTANT] Dotenv related options are processed first.
     _load_dotenv(cmdline, namespace)
+
+    cmdline = _inject_default_subcommand(cmdline)
 
     parser = default_argument_parser()
     args = parser.parse_known_args(cmdline, namespace)[0]

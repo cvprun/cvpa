@@ -5,6 +5,7 @@ from unittest import TestCase, main
 from unittest.mock import patch
 
 from cvpa.arguments import (
+    _inject_default_subcommand,
     _load_dotenv,
     _remove_dotenv_attrs,
     cvp_home,
@@ -35,28 +36,62 @@ class DefaultArgumentParserTestCase(TestCase):
 
 class GetDefaultArgumentsTestCase(TestCase):
     def test_agent_command(self):
-        args = get_default_arguments(["agent", "slug1", "--uri", "ws://test"])
+        args = get_default_arguments(["agent", "cvp_slug1_tok1", "--uri", "ws://test"])
         self.assertEqual(args.cmd, "agent")
         self.assertEqual(args.uri, "ws://test")
-        self.assertEqual(args.slug, "slug1")
+        self.assertEqual(args.token, "cvp_slug1_tok1")
 
     def test_agent_command_default_uri(self):
-        args = get_default_arguments(["agent", "slug1"])
+        args = get_default_arguments(["agent", "cvp_slug1_tok1"])
         self.assertEqual(args.cmd, "agent")
         self.assertEqual(args.uri, "https://app.cvp.run/")
-        self.assertEqual(args.slug, "slug1")
+        self.assertEqual(args.token, "cvp_slug1_tok1")
+
+    def test_agent_command_auto_inject(self):
+        args = get_default_arguments(["cvp_slug1_tok1"])
+        self.assertEqual(args.cmd, "agent")
+        self.assertEqual(args.token, "cvp_slug1_tok1")
 
     def test_debug_flag(self):
-        args = get_default_arguments(["--debug", "agent", "s"])
+        args = get_default_arguments(["--debug", "agent"])
         self.assertTrue(args.debug)
 
     def test_d_flag(self):
-        args = get_default_arguments(["-D", "agent", "s"])
+        args = get_default_arguments(["-D", "agent"])
         self.assertTrue(args.D)
 
     def test_no_command(self):
         args = get_default_arguments([])
         self.assertIsNone(args.cmd)
+
+
+class InjectDefaultSubcommandTestCase(TestCase):
+    def test_already_has_agent(self):
+        result = _inject_default_subcommand(["agent", "cvp_x_y"])
+        self.assertEqual(result, ["agent", "cvp_x_y"])
+
+    def test_inject_before_token(self):
+        result = _inject_default_subcommand(["cvp_x_y"])
+        self.assertEqual(result, ["agent", "cvp_x_y"])
+
+    def test_inject_after_flags(self):
+        result = _inject_default_subcommand(["--debug", "cvp_x_y"])
+        self.assertEqual(result, ["--debug", "agent", "cvp_x_y"])
+
+    def test_no_token_no_inject(self):
+        result = _inject_default_subcommand(["--debug"])
+        self.assertEqual(result, ["--debug"])
+
+    def test_none_reads_sys_argv(self):
+        import sys
+
+        original = sys.argv
+        sys.argv = ["cvpa", "cvp_x_y"]
+        try:
+            result = _inject_default_subcommand(None)
+            self.assertEqual(result, ["agent", "cvp_x_y"])
+        finally:
+            sys.argv = original
 
 
 class LoadDotenvTestCase(TestCase):

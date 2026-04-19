@@ -115,3 +115,5 @@ ONVIF_ADDRESS: Final[str] = "http://localhost/"
 ZEEP_ELEMENT_SEPARATOR: Final[str] = "."
 
 DEFAULT_CVPA_URL: Final[str] = "https://app.cvp.run/"
+
+AGENT_TOKEN_PREFIX: Final[str] = "cvp_"
