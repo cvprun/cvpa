@@ -10,6 +10,7 @@ from cvpa.logging.logging import SEVERITIES, SEVERITY_NAME_INFO
 from cvpa.system.environ import get_typed_environ_value as get_eval
 from cvpa.system.environ_keys import (
     CVPA_AGENT_TOKEN,
+    CVPA_AGENT_URL,
     CVPA_COLORED_LOGGING,
     CVPA_DEBUG,
     CVPA_DOTENV_PATH,
@@ -24,6 +25,7 @@ from cvpa.system.environ_keys import (
 )
 from cvpa.variables import (
     CVPA_HOME_DIRNAME,
+    DEFAULT_CVPA_URL,
     DOTENV_LOCAL_FILENAME,
     LOGGING_STEP,
     SLOW_CALLBACK_DURATION,
@@ -83,8 +85,15 @@ def add_agent_parser(subparsers) -> None:
     )
     assert isinstance(parser, ArgumentParser)
 
-    parser.add_argument("uri", help="WebSocket server URI")
     parser.add_argument("slug", help="Agent slug identifier")
+    parser.add_argument(
+        "--uri",
+        default=get_eval(CVPA_AGENT_URL, DEFAULT_CVPA_URL),
+        help=(
+            "Base URL prefix of the CVPA service "
+            f"(default: '{DEFAULT_CVPA_URL}', or set CVPA_AGENT_URL)"
+        ),
+    )
     parser.add_argument(
         "--token",
         default=get_eval(CVPA_AGENT_TOKEN, ""),

@@ -35,17 +35,23 @@ class DefaultArgumentParserTestCase(TestCase):
 
 class GetDefaultArgumentsTestCase(TestCase):
     def test_agent_command(self):
-        args = get_default_arguments(["agent", "ws://test", "slug1"])
+        args = get_default_arguments(["agent", "slug1", "--uri", "ws://test"])
         self.assertEqual(args.cmd, "agent")
         self.assertEqual(args.uri, "ws://test")
         self.assertEqual(args.slug, "slug1")
 
+    def test_agent_command_default_uri(self):
+        args = get_default_arguments(["agent", "slug1"])
+        self.assertEqual(args.cmd, "agent")
+        self.assertEqual(args.uri, "https://app.cvp.run/")
+        self.assertEqual(args.slug, "slug1")
+
     def test_debug_flag(self):
-        args = get_default_arguments(["--debug", "agent", "ws://t", "s"])
+        args = get_default_arguments(["--debug", "agent", "s"])
         self.assertTrue(args.debug)
 
     def test_d_flag(self):
-        args = get_default_arguments(["-D", "agent", "ws://t", "s"])
+        args = get_default_arguments(["-D", "agent", "s"])
         self.assertTrue(args.D)
 
     def test_no_command(self):

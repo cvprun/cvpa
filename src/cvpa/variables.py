@@ -113,3 +113,5 @@ ONVIF_NONAME: Final[str] = "New Device"
 ONVIF_ADDRESS: Final[str] = "http://localhost/"
 
 ZEEP_ELEMENT_SEPARATOR: Final[str] = "."
+
+DEFAULT_CVPA_URL: Final[str] = "https://app.cvp.run/"
