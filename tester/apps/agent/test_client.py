@@ -5,64 +5,60 @@ from unittest.mock import AsyncMock, patch
 
 
 class AgentClientSyncTestCase(TestCase):
-    @patch("cvpa.apps.agent.client.WebSocketClient")
+    @patch("cvpa.apps.agent.client.AgentConnection")
     @patch("cvpa.apps.agent.client.ServiceManager")
-    @patch("cvpa.apps.agent.client.MessageDispatcher")
-    def test_init(self, mock_disp, mock_mgr, mock_ws):
+    def test_init_default(self, mock_mgr, mock_conn):
         from cvpa.apps.agent.client import AgentClient
 
-        client = AgentClient("ws://test", "slug", "token")
+        client = AgentClient("http://test", "slug", "token")
         self.assertIsNotNone(client.services)
+        self.assertIsNotNone(client.connection)
+        mock_conn.assert_called_once()
+        kwargs = mock_conn.call_args.kwargs
+        self.assertEqual(kwargs["uri"], "http://test")
+        self.assertEqual(kwargs["slug"], "slug")
+        self.assertEqual(kwargs["token"], "token")
+        self.assertFalse(kwargs["legacy_protocol"])
+
+    @patch("cvpa.apps.agent.client.AgentConnection")
+    @patch("cvpa.apps.agent.client.ServiceManager")
+    def test_init_legacy(self, mock_mgr, mock_conn):
+        from cvpa.apps.agent.client import AgentClient
+
+        AgentClient("http://test", "slug", "token", legacy_protocol=True)
+        kwargs = mock_conn.call_args.kwargs
+        self.assertTrue(kwargs["legacy_protocol"])
 
 
-@patch("cvpa.apps.agent.client.WebSocketClient")
+@patch("cvpa.apps.agent.client.AgentConnection")
 @patch("cvpa.apps.agent.client.ServiceManager")
-@patch("cvpa.apps.agent.client.MessageDispatcher")
-async def test_start(mock_disp, mock_mgr_cls, mock_ws_cls):
+async def test_start(mock_mgr_cls, mock_conn_cls):
     from cvpa.apps.agent.client import AgentClient
 
     mock_mgr = AsyncMock()
-    mock_ws = AsyncMock()
+    mock_conn = AsyncMock()
     mock_mgr_cls.return_value = mock_mgr
-    mock_ws_cls.return_value = mock_ws
+    mock_conn_cls.return_value = mock_conn
 
-    client = AgentClient("ws://test", "slug", "token")
-    client._services = mock_mgr
-    client._client = mock_ws
+    client = AgentClient("http://test", "slug", "token")
     await client.start()
-    mock_mgr.start_all.assert_awaited_once()
-    mock_ws.start.assert_awaited_once()
+    mock_conn.start.assert_awaited_once()
 
 
-@patch("cvpa.apps.agent.client.WebSocketClient")
+@patch("cvpa.apps.agent.client.AgentConnection")
 @patch("cvpa.apps.agent.client.ServiceManager")
-@patch("cvpa.apps.agent.client.MessageDispatcher")
-async def test_stop(mock_disp, mock_mgr_cls, mock_ws_cls):
+async def test_stop(mock_mgr_cls, mock_conn_cls):
     from cvpa.apps.agent.client import AgentClient
 
     mock_mgr = AsyncMock()
-    mock_ws = AsyncMock()
+    mock_conn = AsyncMock()
     mock_mgr_cls.return_value = mock_mgr
-    mock_ws_cls.return_value = mock_ws
+    mock_conn_cls.return_value = mock_conn
 
-    client = AgentClient("ws://test", "slug", "token")
-    client._services = mock_mgr
-    client._client = mock_ws
+    client = AgentClient("http://test", "slug", "token")
     await client.stop()
+    mock_conn.stop.assert_awaited_once()
     mock_mgr.stop_all.assert_awaited_once()
-    mock_ws.stop.assert_awaited_once()
-
-
-@patch("cvpa.apps.agent.client.WebSocketClient")
-@patch("cvpa.apps.agent.client.ServiceManager")
-@patch("cvpa.apps.agent.client.MessageDispatcher")
-async def test_request_ticket(mock_disp, mock_mgr, mock_ws):
-    from cvpa.apps.agent.client import AgentClient
-
-    client = AgentClient("ws://test", "slug", "token")
-    with patch("cvpa.apps.agent.client.request_ticket", return_value="ws://url"):
-        result = await client._request_ticket()
-        assert result == "ws://url"
 
 
 if __name__ == "__main__":

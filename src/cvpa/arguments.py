@@ -103,6 +103,15 @@ def add_agent_parser(subparsers) -> None:
             f"(default: '{DEFAULT_CVPA_URL}', or set CVPA_AGENT_URL)"
         ),
     )
+    parser.add_argument(
+        "--legacy-protocol",
+        action="store_true",
+        default=False,
+        help=(
+            "Use the legacy ping/pong protocol for compatibility with pre-state-machine"
+            " servers (transition period only)"
+        ),
+    )
 
 
 def default_argument_parser() -> ArgumentParser:

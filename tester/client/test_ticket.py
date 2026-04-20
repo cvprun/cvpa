@@ -5,7 +5,8 @@ from logging import DEBUG, getLogger
 from unittest import TestCase, main
 from unittest.mock import MagicMock, patch
 
-from cvpa.client.ticket import _mask_token, _truncate, request_ticket
+from cvpa.client.ticket import TicketError, _mask_token, _truncate, request_ticket
+from cvpa.ws.protocol import ErrorCode
 
 
 def _make_resp(status, body, content_type="application/json"):
@@ -43,17 +44,87 @@ class RequestTicketTestCase(TestCase):
         mock_conn_cls.assert_called_once_with("example.com")
 
     @patch("cvpa.client.ticket.HTTPConnection")
-    def test_error_status(self, mock_conn_cls):
+    def test_error_status_plain(self, mock_conn_cls):
         mock_conn = MagicMock()
         mock_conn.getresponse.return_value = _make_resp(
             403, b"Forbidden", content_type="text/plain"
         )
         mock_conn_cls.return_value = mock_conn
 
-        with self.assertRaises(RuntimeError) as ctx:
+        with self.assertRaises(TicketError) as ctx:
             request_ticket("http://example.com", "slug1", "token1")
-        self.assertIn("Forbidden", str(ctx.exception))
-        mock_conn.close.assert_called_once()
+        self.assertEqual(ctx.exception.status, 403)
+        self.assertIsNone(ctx.exception.code)
+        self.assertIn("Forbidden", ctx.exception.message)
+
+    @patch("cvpa.client.ticket.HTTPConnection")
+    def test_error_status_json_code(self, mock_conn_cls):
+        mock_conn = MagicMock()
+        body = json.dumps(
+            {"code": ErrorCode.AGENT_SUSPENDED, "message": "suspended"}
+        ).encode()
+        mock_conn.getresponse.return_value = _make_resp(
+            403, body, content_type="application/json"
+        )
+        mock_conn_cls.return_value = mock_conn
+
+        with self.assertRaises(TicketError) as ctx:
+            request_ticket("http://example.com", "slug1", "token1")
+        self.assertEqual(ctx.exception.status, 403)
+        self.assertEqual(ctx.exception.code, ErrorCode.AGENT_SUSPENDED)
+        self.assertTrue(ctx.exception.is_suspended)
+        self.assertFalse(ctx.exception.is_terminating)
+
+    @patch("cvpa.client.ticket.HTTPConnection")
+    def test_error_status_json_terminating(self, mock_conn_cls):
+        mock_conn = MagicMock()
+        body = json.dumps(
+            {"code": ErrorCode.AGENT_TERMINATING, "message": "bye"}
+        ).encode()
+        mock_conn.getresponse.return_value = _make_resp(
+            403, body, content_type="application/json"
+        )
+        mock_conn_cls.return_value = mock_conn
+
+        with self.assertRaises(TicketError) as ctx:
+            request_ticket("http://example.com", "slug1", "token1")
+        self.assertTrue(ctx.exception.is_terminating)
+
+    @patch("cvpa.client.ticket.HTTPConnection")
+    def test_error_status_auth(self, mock_conn_cls):
+        mock_conn = MagicMock()
+        mock_conn.getresponse.return_value = _make_resp(
+            401, b"nope", content_type="text/plain"
+        )
+        mock_conn_cls.return_value = mock_conn
+
+        with self.assertRaises(TicketError) as ctx:
+            request_ticket("http://example.com", "slug1", "token1")
+        self.assertTrue(ctx.exception.is_auth_failure)
+
+    @patch("cvpa.client.ticket.HTTPConnection")
+    def test_error_status_not_found(self, mock_conn_cls):
+        mock_conn = MagicMock()
+        mock_conn.getresponse.return_value = _make_resp(
+            404, b"gone", content_type="text/plain"
+        )
+        mock_conn_cls.return_value = mock_conn
+
+        with self.assertRaises(TicketError) as ctx:
+            request_ticket("http://example.com", "slug1", "token1")
+        self.assertTrue(ctx.exception.is_not_found)
+
+    @patch("cvpa.client.ticket.HTTPConnection")
+    def test_error_status_retryable(self, mock_conn_cls):
+        mock_conn = MagicMock()
+        mock_conn.getresponse.return_value = _make_resp(
+            503, b"busy", content_type="text/plain"
+        )
+        mock_conn_cls.return_value = mock_conn
+
+        with self.assertRaises(TicketError) as ctx:
+            request_ticket("http://example.com", "slug1", "token1")
+        self.assertTrue(ctx.exception.is_retryable)
 
     @patch("cvpa.client.ticket.HTTPConnection")
     def test_custom_logger_debug(self, mock_conn_cls):
@@ -87,9 +158,9 @@ class RequestTicketTestCase(TestCase):
         )
         mock_conn_cls.return_value = mock_conn
 
-        with self.assertRaises(RuntimeError) as ctx:
+        with self.assertRaises(TicketError) as ctx:
             request_ticket("http://example.com", "slug1", "token1")
-        self.assertIn("truncated", str(ctx.exception))
+        self.assertIn("truncated", ctx.exception.message)
 
 
 class MaskTokenTestCase(TestCase):
@@ -109,6 +180,18 @@ class TruncateTestCase(TestCase):
         result = _truncate("x" * 20, limit=5)
         self.assertTrue(result.startswith("xxxxx"))
         self.assertIn("truncated", result)
+
+
+class TicketErrorStrTestCase(TestCase):
+    def test_str_with_code(self):
+        err = TicketError(403, "agent_suspended", "suspended")
+        self.assertIn("403", str(err))
+        self.assertIn("agent_suspended", str(err))
+
+    def test_str_without_code(self):
+        err = TicketError(500, None, "boom")
+        self.assertIn("500", str(err))
+        self.assertIn("boom", str(err))
 
 
 if __name__ == "__main__":
