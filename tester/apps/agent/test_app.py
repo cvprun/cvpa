@@ -20,8 +20,11 @@ class AgentApplicationSyncTestCase(TestCase):
         from cvpa.apps.agent.app import AgentApplication
 
         app = AgentApplication("ws://test", "slug", "token")
-        app.start()
-        mock_aio_run.assert_called_once()
+        try:
+            app.start()
+            mock_aio_run.assert_called_once()
+        finally:
+            mock_aio_run.call_args.args[0].close()
 
     @patch("cvpa.apps.agent.app.aio_run", side_effect=KeyboardInterrupt)
     @patch("cvpa.apps.agent.app.AgentClient")
@@ -29,7 +32,10 @@ class AgentApplicationSyncTestCase(TestCase):
         from cvpa.apps.agent.app import AgentApplication
 
         app = AgentApplication("ws://test", "slug", "token")
-        app.start()
+        try:
+            app.start()
+        finally:
+            mock_aio_run.call_args.args[0].close()
 
 
 @patch("cvpa.apps.agent.app.AgentClient")

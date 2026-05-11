@@ -14,16 +14,22 @@ class AioRunTestCase(TestCase):
         from cvpa.aio.run import aio_run
 
         coro = _noop()
-        aio_run(coro, use_uvloop=False)
-        mock_run.assert_called_once_with(coro)
+        try:
+            aio_run(coro, use_uvloop=False)
+            mock_run.assert_called_once_with(coro)
+        finally:
+            coro.close()
 
     @patch("cvpa.aio.run.uv_run")
     def test_with_uvloop(self, mock_uv_run):
         from cvpa.aio.run import aio_run
 
         coro = _noop()
-        aio_run(coro, use_uvloop=True)
-        mock_uv_run.assert_called_once_with(coro)
+        try:
+            aio_run(coro, use_uvloop=True)
+            mock_uv_run.assert_called_once_with(coro)
+        finally:
+            coro.close()
 
 
 class UvRunTestCase(TestCase):
@@ -38,8 +44,11 @@ class UvRunTestCase(TestCase):
                     from cvpa.aio.run import uv_run
 
                     coro = _noop()
-                    uv_run(coro)
-                    mock_runner.run.assert_called_once_with(coro)
+                    try:
+                        uv_run(coro)
+                        mock_runner.run.assert_called_once_with(coro)
+                    finally:
+                        coro.close()
 
     def test_python_below_3_11(self):
         with patch("cvpa.aio.run.version_info", (3, 10)):
@@ -48,9 +57,12 @@ class UvRunTestCase(TestCase):
                     from cvpa.aio.run import uv_run
 
                     coro = _noop()
-                    uv_run(coro)
-                    mock_install.assert_called_once()
-                    mock_run.assert_called_once_with(coro)
+                    try:
+                        uv_run(coro)
+                        mock_install.assert_called_once()
+                        mock_run.assert_called_once_with(coro)
+                    finally:
+                        coro.close()
 
 
 if __name__ == "__main__":
