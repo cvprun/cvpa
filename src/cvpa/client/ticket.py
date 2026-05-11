@@ -47,13 +47,13 @@ class TicketError(Exception):
         return self.status == 429 or self.status >= 500
 
 
-def _mask_token(token: str) -> str:
+def mask_token(token: str) -> str:
     if len(token) <= 8:
         return "***"
     return f"{token[:4]}...{token[-4:]}"
 
 
-def _truncate(text: str, limit: int = LOG_BODY_MAX_CHARS) -> str:
+def truncate_text(text: str, limit: int = LOG_BODY_MAX_CHARS) -> str:
     if len(text) <= limit:
         return text
     return f"{text[:limit]}... [truncated {len(text) - limit} chars]"
@@ -65,15 +65,15 @@ def _parse_error(raw: bytes, content_type: str) -> tuple[Optional[str], str]:
         try:
             data = json.loads(body_text)
         except json.JSONDecodeError:
-            return None, _truncate(body_text)
+            return None, truncate_text(body_text)
         if isinstance(data, dict):
             code = data.get("code")
             message = data.get("message") or body_text
             return (
                 code if isinstance(code, str) else None,
-                _truncate(message if isinstance(message, str) else body_text),
+                truncate_text(message if isinstance(message, str) else body_text),
             )
-    return None, _truncate(body_text)
+    return None, truncate_text(body_text)
 
 
 def request_ticket(
@@ -93,7 +93,7 @@ def request_ticket(
 
     log.debug(
         f"Ticket request POST {parsed.scheme}://{parsed.netloc}{path} "
-        f"slug={slug} token={_mask_token(token)}"
+        f"slug={slug} token={mask_token(token)}"
     )
 
     conn: HTTPConnection
@@ -119,7 +119,7 @@ def request_ticket(
         if resp.status != 200:
             code, message = _parse_error(raw, content_type)
             log.debug(
-                f"Ticket response body: {_truncate(raw.decode(errors='replace'))}"
+                f"Ticket response body: {truncate_text(raw.decode(errors='replace'))}"
             )
             raise TicketError(status=resp.status, code=code, message=message)
 

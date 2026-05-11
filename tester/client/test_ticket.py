@@ -5,7 +5,7 @@ from logging import DEBUG, getLogger
 from unittest import TestCase, main
 from unittest.mock import MagicMock, patch
 
-from cvpa.client.ticket import TicketError, _mask_token, _truncate, request_ticket
+from cvpa.client.ticket import TicketError, mask_token, request_ticket, truncate_text
 from cvpa.ws.protocol import ErrorCode
 
 
@@ -165,19 +165,19 @@ class RequestTicketTestCase(TestCase):
 
 class MaskTokenTestCase(TestCase):
     def test_short_token_masked_entirely(self):
-        self.assertEqual(_mask_token("abc"), "***")
-        self.assertEqual(_mask_token("12345678"), "***")
+        self.assertEqual(mask_token("abc"), "***")
+        self.assertEqual(mask_token("12345678"), "***")
 
     def test_long_token_keeps_edges(self):
-        self.assertEqual(_mask_token("abcdefghij"), "abcd...ghij")
+        self.assertEqual(mask_token("abcdefghij"), "abcd...ghij")
 
 
 class TruncateTestCase(TestCase):
     def test_short_unchanged(self):
-        self.assertEqual(_truncate("hello", limit=10), "hello")
+        self.assertEqual(truncate_text("hello", limit=10), "hello")
 
     def test_long_truncated(self):
-        result = _truncate("x" * 20, limit=5)
+        result = truncate_text("x" * 20, limit=5)
         self.assertTrue(result.startswith("xxxxx"))
         self.assertIn("truncated", result)
 
