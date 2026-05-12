@@ -16,15 +16,6 @@ class AgentClientSyncTestCase(TestCase):
         self.assertEqual(kwargs["uri"], "http://test")
         self.assertEqual(kwargs["slug"], "slug")
         self.assertEqual(kwargs["token"], "token")
-        self.assertFalse(kwargs["legacy_protocol"])
-
-    @patch("cvpa.apps.agent.client.AgentConnection")
-    def test_init_legacy(self, mock_conn):
-        from cvpa.apps.agent.client import AgentClient
-
-        AgentClient("http://test", "slug", "token", legacy_protocol=True)
-        kwargs = mock_conn.call_args.kwargs
-        self.assertTrue(kwargs["legacy_protocol"])
 
 
 @patch("cvpa.apps.agent.client.AgentConnection")

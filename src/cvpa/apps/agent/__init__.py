@@ -13,7 +13,6 @@ def agent_main(args: Namespace) -> None:
     assert isinstance(args.verbose, int)
     assert isinstance(args.uri, str)
     assert isinstance(args.token, str)
-    assert isinstance(getattr(args, "legacy_protocol", False), bool)
 
     slug, token = parse_agent_token(args.token)
 
@@ -30,6 +29,5 @@ def agent_main(args: Namespace) -> None:
         use_uvloop=args.use_uvloop,
         debug=args.debug,
         verbose=args.verbose,
-        legacy_protocol=getattr(args, "legacy_protocol", False),
     )
     app.start()

@@ -11,7 +11,6 @@ class AgentClient:
         slug: str,
         token: str,
         *,
-        legacy_protocol: bool = False,
         agent_version: str = "",
     ) -> None:
         self._uri = uri
@@ -22,7 +21,6 @@ class AgentClient:
             slug=slug,
             token=token,
             logger=logger,
-            legacy_protocol=legacy_protocol,
             agent_version=agent_version,
         )
 

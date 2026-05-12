@@ -124,7 +124,6 @@ class AgentConnection:
         on_active: Optional[AsyncNoArg] = None,
         on_deactive: Optional[AsyncNoArg] = None,
         logger: Optional[Logger] = None,
-        legacy_protocol: bool = False,
         heartbeat_interval_ms: int = HEARTBEAT_INTERVAL_MS,
         heartbeat_timeout_ms: int = HEARTBEAT_TIMEOUT_MS,
         hello_timeout_ms: int = HELLO_TIMEOUT_MS,
@@ -139,7 +138,6 @@ class AgentConnection:
         self._slug = slug
         self._token = token
         self._logger = logger
-        self._legacy = legacy_protocol
 
         self._heartbeat_interval_ms = heartbeat_interval_ms
         self._heartbeat_timeout_ms = heartbeat_timeout_ms
@@ -270,7 +268,6 @@ class AgentConnection:
                     "version": self._agent_version,
                     "capabilities": self._capabilities,
                     "pid": os.getpid(),
-                    "legacy": self._legacy,
                 },
             )
         )

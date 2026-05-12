@@ -19,7 +19,6 @@ class AgentApplication:
         use_uvloop=False,
         debug=False,
         verbose=0,
-        legacy_protocol=False,
     ):
         self._uri = uri
         self._slug = slug
@@ -29,8 +28,7 @@ class AgentApplication:
         self._use_uvloop = use_uvloop
         self._debug = debug
         self._verbose = verbose
-        self._legacy_protocol = legacy_protocol
-        self._client = AgentClient(uri, slug, token, legacy_protocol=legacy_protocol)
+        self._client = AgentClient(uri, slug, token)
 
     async def on_main(self) -> None:
         logger.info(f"Starting agent application: {self._uri}")
