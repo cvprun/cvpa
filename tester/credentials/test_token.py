@@ -2,7 +2,7 @@
 
 from unittest import TestCase, main
 
-from cvpa.apps.agent.token import parse_agent_token
+from cvpa.credentials.token import parse_agent_token
 
 
 class ParseAgentTokenTestCase(TestCase):

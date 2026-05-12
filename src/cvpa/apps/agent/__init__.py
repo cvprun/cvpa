@@ -2,7 +2,7 @@
 
 from argparse import Namespace
 
-from cvpa.apps.agent.token import parse_agent_token
+from cvpa.credentials.token import parse_agent_token
 
 
 def agent_main(args: Namespace) -> None:
