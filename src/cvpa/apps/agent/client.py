@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from cvpa.logging.loggers import agent_logger as logger
-from cvpa.ws.client import AgentConnection
+from cvpa.ws.connection import AgentConnection
 
 
 class AgentClient:

@@ -3,7 +3,7 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from cvpa.client.ticket import TicketError
-from cvpa.ws.client import AgentConnection
+from cvpa.ws.connection import AgentConnection
 from cvpa.ws.protocol import (
     TYPE_AGENT_ROTATE,
     TYPE_AGENT_SHUTDOWN,
@@ -180,7 +180,7 @@ def test_backoff_delay_nonnegative_with_jitter():
             assert d >= 0.0
 
 
-@patch("cvpa.ws.client.request_ticket")
+@patch("cvpa.ws.connection.request_ticket")
 async def test_request_ticket_offloads_to_executor(mock_request):
     mock_request.return_value = "ws://agent/ws?ticket=X"
     conn = _make_connection()

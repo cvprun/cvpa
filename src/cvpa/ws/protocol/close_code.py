@@ -1,0 +1,17 @@
+# -*- coding: utf-8 -*-
+
+from enum import IntEnum
+
+
+class CloseCode(IntEnum):
+    NORMAL = 1000
+    GOING_AWAY = 1001
+    INTERNAL_ERROR = 1011
+    HEARTBEAT_TIMEOUT = 4001
+    SHUTDOWN_REQUESTED = 4002
+    SHUTDOWN_FORCED = 4003
+    SUSPENDED = 4010
+    TOKEN_ROTATED = 4011
+    TOKEN_INVALID = 4012
+    TERMINATING = 4020
+    DUPLICATE_SESSION = 4030
