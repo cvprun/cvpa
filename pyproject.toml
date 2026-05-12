@@ -57,7 +57,7 @@ Homepage = "https://github.com/cvprun/cvpa"
 "GitHub: repo" = "https://github.com/cvprun/cvpa"
 
 [project.scripts]
-cvpa = "cvpa.main:main"
+cvpa = "cvpa.entrypoint:main"
 
 [tool.hatch.version]
 path = "src/cvpa/__init__.py"
