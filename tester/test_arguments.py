@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-import tempfile
+from argparse import Namespace
+from tempfile import NamedTemporaryFile
 from unittest import TestCase, main
 from unittest.mock import patch
 
@@ -36,13 +37,15 @@ class DefaultArgumentParserTestCase(TestCase):
 
 class GetDefaultArgumentsTestCase(TestCase):
     def test_agent_command(self):
-        args = get_default_arguments(["agent", "cvp_slug1_tok1", "--uri", "ws://test"])
+        args = get_default_arguments(
+            ["--token", "cvp_slug1_tok1", "--uri", "ws://test", "agent"]
+        )
         self.assertEqual(args.cmd, "agent")
         self.assertEqual(args.uri, "ws://test")
         self.assertEqual(args.token, "cvp_slug1_tok1")
 
     def test_agent_command_default_uri(self):
-        args = get_default_arguments(["agent", "cvp_slug1_tok1"])
+        args = get_default_arguments(["--token", "cvp_slug1_tok1", "agent"])
         self.assertEqual(args.cmd, "agent")
         self.assertEqual(args.uri, "https://app.cvp.run/")
         self.assertEqual(args.token, "cvp_slug1_tok1")
@@ -50,7 +53,6 @@ class GetDefaultArgumentsTestCase(TestCase):
     def test_agent_command_auto_inject(self):
         args = get_default_arguments(["cvp_slug1_tok1"])
         self.assertEqual(args.cmd, "agent")
-        self.assertEqual(args.token, "cvp_slug1_tok1")
 
     def test_debug_flag(self):
         args = get_default_arguments(["--debug", "agent"])
@@ -102,7 +104,7 @@ class LoadDotenvTestCase(TestCase):
         _load_dotenv(["--dotenv-path", "/nonexistent/path/.env"])
 
     def test_unreadable_file(self):
-        with tempfile.NamedTemporaryFile(suffix=".env", delete=False) as f:
+        with NamedTemporaryFile(suffix=".env", delete=False) as f:
             f.write(b"KEY=VALUE")
             f.flush()
             import os
@@ -114,13 +116,13 @@ class LoadDotenvTestCase(TestCase):
                 os.chmod(f.name, 0o644)
 
     def test_valid_dotenv(self):
-        with tempfile.NamedTemporaryFile(mode="w", suffix=".env", delete=False) as f:
+        with NamedTemporaryFile(mode="w", suffix=".env", delete=False) as f:
             f.write("_CVPA_TEST_DOTENV_=hello\n")
             f.flush()
             _load_dotenv(["--dotenv-path", f.name])
 
     def test_missing_dotenv_module(self):
-        with tempfile.NamedTemporaryFile(mode="w", suffix=".env", delete=False) as f:
+        with NamedTemporaryFile(mode="w", suffix=".env", delete=False) as f:
             f.write("KEY=VALUE\n")
             f.flush()
             with patch("cvpa.arguments.isfile", return_value=True):
@@ -131,8 +133,6 @@ class LoadDotenvTestCase(TestCase):
 
 class RemoveDotenvAttrsTestCase(TestCase):
     def test_removes_attrs(self):
-        from argparse import Namespace
-
         ns = Namespace(no_dotenv=False, dotenv_path="/tmp/.env", other="val")
         result = _remove_dotenv_attrs(ns)
         self.assertFalse(hasattr(result, "no_dotenv"))

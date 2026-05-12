@@ -24,12 +24,12 @@ from cvpa.system.environ_keys import (
     CVPA_VERBOSE,
 )
 from cvpa.variables import (
-    AGENT_TOKEN_PREFIX,
+    CVP_ADDRESS,
     CVPA_HOME_DIRNAME,
-    DEFAULT_CVPA_URL,
     DOTENV_LOCAL_FILENAME,
     LOGGING_STEP,
     SLOW_CALLBACK_DURATION,
+    TOKEN_PREFIX,
 )
 
 PROG: Final[str] = "cvpa"
@@ -86,24 +86,6 @@ def add_agent_parser(subparsers) -> None:
     )
     assert isinstance(parser, ArgumentParser)
 
-    parser.add_argument(
-        "token",
-        nargs="?",
-        default=get_eval(CVPA_AGENT_TOKEN, ""),
-        help=(
-            f"Combined agent token in the form '{AGENT_TOKEN_PREFIX}{{hex}}_{{slug}}'"
-            " (or set CVPA_AGENT_TOKEN)"
-        ),
-    )
-    parser.add_argument(
-        "--uri",
-        default=get_eval(CVPA_AGENT_URL, DEFAULT_CVPA_URL),
-        help=(
-            "Base URL prefix of the CVPA service "
-            f"(default: '{DEFAULT_CVPA_URL}', or set CVPA_AGENT_URL)"
-        ),
-    )
-
 
 def default_argument_parser() -> ArgumentParser:
     parser = ArgumentParser(
@@ -114,6 +96,19 @@ def default_argument_parser() -> ArgumentParser:
     )
 
     add_dotenv_arguments(parser)
+
+    parser.add_argument(
+        "--token",
+        "-t",
+        default=get_eval(CVPA_AGENT_TOKEN, ""),
+        help=f"Combined agent token in the form '{TOKEN_PREFIX}{{hex}}_{{slug}}'",
+    )
+    parser.add_argument(
+        "--uri",
+        "-u",
+        default=get_eval(CVPA_AGENT_URL, CVP_ADDRESS),
+        help=f"Base URL prefix of the CVPA service (default: '{CVP_ADDRESS}')",
+    )
 
     home_path = cvp_home()
     parser.add_argument(
@@ -253,7 +248,7 @@ def _inject_default_subcommand(
         return args_list
 
     for i, arg in enumerate(args_list):
-        if arg.startswith(AGENT_TOKEN_PREFIX):
+        if arg.startswith(TOKEN_PREFIX):
             args_list.insert(i, CMD_AGENT)
             return args_list
 

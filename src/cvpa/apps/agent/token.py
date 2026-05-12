@@ -2,10 +2,10 @@
 
 from typing import Tuple
 
-from cvpa.variables import AGENT_TOKEN_PREFIX
+from cvpa.variables import TOKEN_PREFIX
 
 
-def parse_agent_token(combined: str, prefix=AGENT_TOKEN_PREFIX) -> Tuple[str, str]:
+def parse_agent_token(combined: str, prefix=TOKEN_PREFIX) -> Tuple[str, str]:
     if not combined.startswith(prefix):
         raise ValueError(f"Agent token must start with the '{prefix}' prefix")
 
