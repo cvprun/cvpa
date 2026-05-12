@@ -6,7 +6,7 @@ from unittest import TestCase, main
 from unittest.mock import MagicMock, patch
 
 from cvpa.client.ticket import TicketError, mask_token, request_ticket, truncate_text
-from cvpa.ws.protocol import ErrorCode
+from cvpa.ws.protocol.error_code import ErrorCode
 
 
 def _make_resp(status, body, content_type="application/json"):

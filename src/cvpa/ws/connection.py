@@ -11,7 +11,8 @@ from typing import Any, Awaitable, Callable, Dict, Final, Optional
 from cvpa.client.ticket import TicketError, request_ticket
 from cvpa.ws.client import GetUrlCallback, WebSocketClient
 from cvpa.ws.handler import MessageDispatcher
-from cvpa.ws.protocol import (
+from cvpa.ws.protocol.close_code import CloseCode
+from cvpa.ws.protocol.constants import (
     GRACEFUL_SHUTDOWN_MS,
     HEARTBEAT_INTERVAL_MS,
     HEARTBEAT_TIMEOUT_MS,
@@ -27,10 +28,11 @@ from cvpa.ws.protocol import (
     TYPE_HEARTBEAT_PONG,
     TYPE_SERVER_ERROR,
     TYPE_SERVER_HELLO,
-    CloseCode,
-    Envelope,
 )
-from cvpa.ws.state_machine import AgentEvent, AgentState, ConnectionStateMachine
+from cvpa.ws.protocol.envelope import Envelope
+from cvpa.ws.state_machine.event import AgentEvent
+from cvpa.ws.state_machine.machine import ConnectionStateMachine
+from cvpa.ws.state_machine.state import AgentState
 
 INITIAL_BACKOFF: Final[float] = 1.0
 MAX_BACKOFF: Final[float] = 60.0

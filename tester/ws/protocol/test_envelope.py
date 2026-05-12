@@ -2,7 +2,7 @@
 
 from unittest import TestCase, main
 
-from cvpa.ws.protocol import Envelope
+from cvpa.ws.protocol.envelope import Envelope
 
 
 class EnvelopeTestCase(TestCase):

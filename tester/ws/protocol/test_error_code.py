@@ -2,7 +2,7 @@
 
 from unittest import TestCase, main
 
-from cvpa.ws.protocol import ErrorCode
+from cvpa.ws.protocol.error_code import ErrorCode
 
 
 class ErrorCodeTestCase(TestCase):

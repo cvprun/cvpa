@@ -2,7 +2,7 @@
 
 from unittest import TestCase, main
 
-from cvpa.ws.protocol import CloseCode
+from cvpa.ws.protocol.close_code import CloseCode
 
 
 class CloseCodeTestCase(TestCase):

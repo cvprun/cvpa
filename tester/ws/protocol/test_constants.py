@@ -2,7 +2,7 @@
 
 from unittest import TestCase, main
 
-from cvpa.ws.protocol import (
+from cvpa.ws.protocol.constants import (
     GRACEFUL_SHUTDOWN_MS,
     HEARTBEAT_INTERVAL_MS,
     HEARTBEAT_TIMEOUT_MS,

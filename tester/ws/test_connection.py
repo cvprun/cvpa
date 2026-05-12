@@ -4,15 +4,16 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 from cvpa.client.ticket import TicketError
 from cvpa.ws.connection import AgentConnection
-from cvpa.ws.protocol import (
+from cvpa.ws.protocol.close_code import CloseCode
+from cvpa.ws.protocol.constants import (
     TYPE_AGENT_ROTATE,
     TYPE_AGENT_SHUTDOWN,
     TYPE_AGENT_SUSPEND,
     TYPE_HEARTBEAT_PONG,
     TYPE_SERVER_HELLO,
-    CloseCode,
 )
-from cvpa.ws.state_machine import AgentEvent, AgentState
+from cvpa.ws.state_machine.event import AgentEvent
+from cvpa.ws.state_machine.state import AgentState
 
 
 def _make_connection(**kwargs) -> AgentConnection:

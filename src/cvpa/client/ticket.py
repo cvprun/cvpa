@@ -8,7 +8,7 @@ from typing import Final, Optional
 from urllib.parse import urlparse
 
 from cvpa.logging.loggers import agent_logger
-from cvpa.ws.protocol import ErrorCode
+from cvpa.ws.protocol.error_code import ErrorCode
 
 CONNECT_PATH_TEMPLATE: Final[str] = "/api/agents/{slug}/connect"
 LOG_BODY_MAX_CHARS: Final[int] = 512

@@ -2,12 +2,10 @@
 
 from unittest import TestCase, main
 
-from cvpa.ws.state_machine import (
-    AgentEvent,
-    AgentState,
-    ConnectionStateMachine,
-    InvalidTransitionError,
-)
+from cvpa.ws.state_machine.errors import InvalidTransitionError
+from cvpa.ws.state_machine.event import AgentEvent
+from cvpa.ws.state_machine.machine import ConnectionStateMachine
+from cvpa.ws.state_machine.state import AgentState
 
 
 class TransitionTableTestCase(TestCase):
