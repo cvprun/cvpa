@@ -69,5 +69,4 @@ print_message "isort ${ARGS[*]}"
 
 uv --directory "$ROOT_DIR" run isort "${ARGS[@]}" \
     "$ROOT_DIR/src/" \
-    "$ROOT_DIR/tester/" \
-    "$ROOT_DIR/main.py"
+    "$ROOT_DIR/tester/"

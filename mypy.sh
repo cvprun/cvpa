@@ -28,7 +28,6 @@ if [[ ${#*} -eq 0 ]]; then
     ARGS+=(
         "$ROOT_DIR/src/"
         "$ROOT_DIR/tester/"
-        "$ROOT_DIR/main.py"
     )
 else
     ARGS+=("$@")
