@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from cvpa.apps.infer import _imports  # noqa: F401  # Gate ML dependencies
 from cvpa.logging.loggers import infer_logger as logger
 
 

@@ -37,6 +37,15 @@ dependencies = [
     "websockets>=15.0",
 ]
 
+[project.optional-dependencies]
+ml = [
+    "pillow>=11",
+    "safetensors>=0.4",
+    "torch>=2.5",
+    "torchvision>=0.20",
+    "transformers>=4.45",
+]
+
 [dependency-groups]
 dev = [
     "black",

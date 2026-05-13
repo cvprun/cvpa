@@ -2,6 +2,7 @@
 
 from typing import Optional
 
+from cvpa.apps.train import _imports  # noqa: F401  # Gate ML dependencies
 from cvpa.logging.loggers import train_logger as logger
 
 
