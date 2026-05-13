@@ -189,6 +189,13 @@ def add_infer_parser(subparsers) -> None:
         help="Input image file or directory",
     )
     parser.add_argument(
+        "--output-dir",
+        "-o",
+        metavar="dir",
+        required=True,
+        help="Directory to write annotated images",
+    )
+    parser.add_argument(
         "--device",
         default=DEFAULT_DEVICE,
         help=f"Compute device: 'auto', 'cpu', 'cuda' (default: '{DEFAULT_DEVICE}')",
