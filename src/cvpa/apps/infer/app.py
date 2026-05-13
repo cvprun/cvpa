@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 
+from typing import Any, Dict, List
+
 from cvpa.apps.infer import _imports  # noqa: F401  # Gate ML dependencies
+from cvpa.apps.infer.device import resolve_device
+from cvpa.apps.infer.formatters import TASK_IMAGE_CLASSIFICATION, format_result
+from cvpa.apps.infer.inputs import iter_image_paths
 from cvpa.logging.loggers import infer_logger as logger
 
 
@@ -20,7 +25,34 @@ class InferApplication:
         self._top_k = top_k
 
     def start(self) -> None:
-        logger.info(
-            f"Starting inference: model={self._model}, input={self._input_path}"
-        )
-        logger.warning("InferApplication is not implemented yet")
+        from transformers import pipeline
+
+        device = resolve_device(self._device)
+        logger.info(f"Loading model: {self._model} (device={device})")
+
+        pipe = pipeline(model=self._model, device=device)
+        logger.info(f"Pipeline ready: task={pipe.task}")
+
+        call_kwargs: Dict[str, Any] = {}
+        if pipe.task == TASK_IMAGE_CLASSIFICATION:
+            call_kwargs["top_k"] = self._top_k
+
+        batch: List[str] = []
+        for path in iter_image_paths(self._input_path):
+            batch.append(path)
+            if len(batch) >= self._batch_size:
+                self._run_batch(pipe, batch, call_kwargs)
+                batch.clear()
+        if batch:
+            self._run_batch(pipe, batch, call_kwargs)
+
+    @staticmethod
+    def _run_batch(pipe, paths: List[str], call_kwargs: Dict[str, Any]) -> None:
+        try:
+            results = pipe(paths, **call_kwargs)
+        except Exception as e:
+            logger.error(f"Batch failed ({len(paths)} images): {e}")
+            return
+
+        for path, result in zip(paths, results):
+            print(format_result(pipe.task, path, result))
