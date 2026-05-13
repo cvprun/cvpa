@@ -30,7 +30,7 @@ class InferApplication:
         device = resolve_device(self._device)
         logger.info(f"Loading model: {self._model} (device={device})")
 
-        pipe = pipeline(model=self._model, device=device)
+        pipe = pipeline(task=None, model=self._model, device=device)
         logger.info(f"Pipeline ready: task={pipe.task}")
 
         call_kwargs: Dict[str, Any] = {}
