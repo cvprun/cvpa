@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from os import makedirs
-from os.path import basename, join, splitext
-from typing import Any, Dict, List
+from os.path import basename, isdir, join, splitext
+from typing import Any, Dict, List, Optional, cast
 
 from PIL import Image
 
@@ -12,6 +12,31 @@ from cvpa.apps.infer.drawers import draw_result
 from cvpa.apps.infer.formatters import TASK_IMAGE_CLASSIFICATION, format_result
 from cvpa.apps.infer.inputs import iter_image_paths
 from cvpa.logging.loggers import infer_logger as logger
+
+_ARCH_TASK_SUFFIXES = (
+    ("ForZeroShotImageClassification", "zero-shot-image-classification"),
+    ("ForImageClassification", "image-classification"),
+    ("ForObjectDetection", "object-detection"),
+    ("ForZeroShotObjectDetection", "zero-shot-object-detection"),
+    ("ForUniversalSegmentation", "image-segmentation"),
+    ("ForInstanceSegmentation", "image-segmentation"),
+    ("ForSemanticSegmentation", "image-segmentation"),
+    ("ForImageSegmentation", "image-segmentation"),
+)
+
+
+def _infer_task_from_local(model_path: str) -> Optional[str]:
+    from transformers import AutoConfig
+
+    config = AutoConfig.from_pretrained(model_path)
+    archs = getattr(config, "architectures", None) or []
+    if not archs:
+        return None
+    arch = archs[0]
+    for suffix, task in _ARCH_TASK_SUFFIXES:
+        if arch.endswith(suffix):
+            return task
+    return None
 
 
 class InferApplication:
@@ -37,7 +62,8 @@ class InferApplication:
         device = resolve_device(self._device)
         logger.info(f"Loading model: {self._model} (device={device})")
 
-        pipe = pipeline(task=None, model=self._model, device=device)
+        task = _infer_task_from_local(self._model) if isdir(self._model) else None
+        pipe = pipeline(task=cast(Any, task), model=self._model, device=device)
         logger.info(f"Pipeline ready: task={pipe.task}")
 
         makedirs(self._output_dir, exist_ok=True)
