@@ -6,13 +6,19 @@ from functools import lru_cache
 from typing import Callable, Dict
 
 from cvpa.apps.agent import agent_main
-from cvpa.arguments import CMD_AGENT
+from cvpa.apps.infer import infer_main
+from cvpa.apps.train import train_main
+from cvpa.arguments import CMD_AGENT, CMD_INFER, CMD_TRAIN
 from cvpa.logging.loggers import logger
 
 
 @lru_cache
 def cmd_apps() -> Dict[str, Callable[[Namespace], None]]:
-    return {CMD_AGENT: agent_main}
+    return {
+        CMD_AGENT: agent_main,
+        CMD_TRAIN: train_main,
+        CMD_INFER: infer_main,
+    }
 
 
 def run_app(cmd: str, args: Namespace) -> int:

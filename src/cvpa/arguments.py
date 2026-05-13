@@ -43,7 +43,29 @@ Simply usage:
   {PROG} {CMD_AGENT}
 """
 
-CMDS: Final[Sequence[str]] = (CMD_AGENT,)
+CMD_TRAIN: Final[str] = "train"
+CMD_TRAIN_HELP: Final[str] = "Train a vision transformer model"
+CMD_TRAIN_EPILOG = f"""
+Simply usage:
+  {PROG} {CMD_TRAIN} --data-dir <path>
+"""
+
+CMD_INFER: Final[str] = "infer"
+CMD_INFER_HELP: Final[str] = "Run inference with a vision transformer model"
+CMD_INFER_EPILOG = f"""
+Simply usage:
+  {PROG} {CMD_INFER} --input <path>
+"""
+
+CMDS: Final[Sequence[str]] = (CMD_AGENT, CMD_TRAIN, CMD_INFER)
+
+DEFAULT_MODEL: Final[str] = "google/vit-base-patch16-224"
+DEFAULT_DEVICE: Final[str] = "auto"
+DEFAULT_TRAIN_EPOCHS: Final[int] = 10
+DEFAULT_TRAIN_BATCH_SIZE: Final[int] = 32
+DEFAULT_TRAIN_LR: Final[float] = 5e-5
+DEFAULT_INFER_BATCH_SIZE: Final[int] = 8
+DEFAULT_INFER_TOP_K: Final[int] = 5
 
 DEFAULT_SEVERITY: Final[str] = SEVERITY_NAME_INFO
 
@@ -85,6 +107,104 @@ def add_agent_parser(subparsers) -> None:
         epilog=CMD_AGENT_EPILOG,
     )
     assert isinstance(parser, ArgumentParser)
+
+
+def add_train_parser(subparsers) -> None:
+    parser = subparsers.add_parser(
+        name=CMD_TRAIN,
+        help=CMD_TRAIN_HELP,
+        formatter_class=RawDescriptionHelpFormatter,
+        epilog=CMD_TRAIN_EPILOG,
+    )
+    assert isinstance(parser, ArgumentParser)
+    parser.add_argument(
+        "--model",
+        default=DEFAULT_MODEL,
+        help=f"Pretrained model id or path (default: '{DEFAULT_MODEL}')",
+    )
+    parser.add_argument(
+        "--data-dir",
+        metavar="dir",
+        required=True,
+        help="Training dataset directory (ImageFolder layout)",
+    )
+    parser.add_argument(
+        "--output-dir",
+        metavar="dir",
+        required=True,
+        help="Directory to write checkpoints and logs",
+    )
+    parser.add_argument(
+        "--epochs",
+        type=int,
+        default=DEFAULT_TRAIN_EPOCHS,
+        help=f"Number of training epochs (default: {DEFAULT_TRAIN_EPOCHS})",
+    )
+    parser.add_argument(
+        "--batch-size",
+        type=int,
+        default=DEFAULT_TRAIN_BATCH_SIZE,
+        help=f"Training batch size (default: {DEFAULT_TRAIN_BATCH_SIZE})",
+    )
+    parser.add_argument(
+        "--lr",
+        type=float,
+        default=DEFAULT_TRAIN_LR,
+        help=f"Learning rate (default: {DEFAULT_TRAIN_LR})",
+    )
+    parser.add_argument(
+        "--device",
+        default=DEFAULT_DEVICE,
+        help=f"Compute device: 'auto', 'cpu', 'cuda' (default: '{DEFAULT_DEVICE}')",
+    )
+    parser.add_argument(
+        "--resume",
+        metavar="ckpt",
+        default=None,
+        help="Resume training from a checkpoint path",
+    )
+
+
+def add_infer_parser(subparsers) -> None:
+    parser = subparsers.add_parser(
+        name=CMD_INFER,
+        help=CMD_INFER_HELP,
+        formatter_class=RawDescriptionHelpFormatter,
+        epilog=CMD_INFER_EPILOG,
+    )
+    assert isinstance(parser, ArgumentParser)
+    parser.add_argument(
+        "--model",
+        default=DEFAULT_MODEL,
+        help=(
+            "Pretrained model id, checkpoint path, or HF hub id "
+            f"(default: '{DEFAULT_MODEL}')"
+        ),
+    )
+    parser.add_argument(
+        "--input",
+        "-i",
+        metavar="path",
+        required=True,
+        help="Input image file or directory",
+    )
+    parser.add_argument(
+        "--device",
+        default=DEFAULT_DEVICE,
+        help=f"Compute device: 'auto', 'cpu', 'cuda' (default: '{DEFAULT_DEVICE}')",
+    )
+    parser.add_argument(
+        "--batch-size",
+        type=int,
+        default=DEFAULT_INFER_BATCH_SIZE,
+        help=f"Inference batch size (default: {DEFAULT_INFER_BATCH_SIZE})",
+    )
+    parser.add_argument(
+        "--top-k",
+        type=int,
+        default=DEFAULT_INFER_TOP_K,
+        help=f"Return top-K predictions per image (default: {DEFAULT_INFER_TOP_K})",
+    )
 
 
 def default_argument_parser() -> ArgumentParser:
@@ -191,6 +311,8 @@ def default_argument_parser() -> ArgumentParser:
 
     subparsers = parser.add_subparsers(dest="cmd")
     add_agent_parser(subparsers)
+    add_train_parser(subparsers)
+    add_infer_parser(subparsers)
 
     return parser
 
