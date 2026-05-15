@@ -6,6 +6,7 @@ from typing import Any, Dict, List, Optional, cast
 
 from PIL import Image
 
+from cvpa.apps.base import App
 from cvpa.apps.infer import _imports  # noqa: F401  # Gate ML dependencies
 from cvpa.apps.infer.device import resolve_device
 from cvpa.apps.infer.drawers import draw_result
@@ -39,7 +40,7 @@ def _infer_task_from_local(model_path: str) -> Optional[str]:
     return None
 
 
-class InferApplication:
+class InferApp(App):
     def __init__(
         self,
         model: str,
@@ -49,6 +50,7 @@ class InferApplication:
         batch_size: int,
         top_k: int,
     ):
+        super().__init__()
         self._model = model
         self._input_path = input_path
         self._output_dir = output_dir

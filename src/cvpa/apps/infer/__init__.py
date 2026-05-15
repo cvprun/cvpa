@@ -13,9 +13,9 @@ def infer_main(args: Namespace) -> None:
 
     # [IMPORTANT]
     # Do not change the import order!
-    from cvpa.apps.infer.app import InferApplication
+    from cvpa.apps.infer.app import InferApp
 
-    app = InferApplication(
+    app = InferApp(
         model=args.model,
         input_path=args.input,
         output_dir=args.output_dir,

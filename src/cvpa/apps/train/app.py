@@ -4,6 +4,7 @@ from os import makedirs
 from os.path import join
 from typing import Optional
 
+from cvpa.apps.base import App
 from cvpa.apps.train import _imports  # noqa: F401  # Gate ML dependencies
 from cvpa.apps.train.dataset import build_dataset
 from cvpa.apps.train.device import resolve_device
@@ -13,7 +14,7 @@ from cvpa.logging.loggers import train_logger as logger
 _LOG_EVERY_N_STEPS = 10
 
 
-class TrainApplication:
+class TrainApp(App):
     def __init__(
         self,
         model: str,
@@ -25,6 +26,7 @@ class TrainApplication:
         device: str,
         resume: Optional[str] = None,
     ):
+        super().__init__()
         self._model = model
         self._data_dir = data_dir
         self._output_dir = output_dir

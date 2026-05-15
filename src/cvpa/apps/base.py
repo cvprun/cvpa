@@ -2,6 +2,7 @@
 
 import inspect
 from abc import ABC, abstractmethod
+from asyncio import get_running_loop
 from dataclasses import dataclass
 from logging import Logger
 from typing import (
@@ -60,8 +61,9 @@ class App(ABC):
     @abstractmethod
     def start(self) -> None: ...
 
-    @abstractmethod
-    async def run_async(self, ctx: Any) -> None: ...
+    async def run_async(self, ctx: Any) -> None:
+        loop = get_running_loop()
+        await loop.run_in_executor(None, self.start)
 
     def build_dispatcher(self, logger: Optional[Logger] = None) -> MessageDispatcher:
         dispatcher = MessageDispatcher(logger=logger)

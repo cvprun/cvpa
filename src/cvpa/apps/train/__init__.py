@@ -15,9 +15,9 @@ def train_main(args: Namespace) -> None:
 
     # [IMPORTANT]
     # Do not change the import order!
-    from cvpa.apps.train.app import TrainApplication
+    from cvpa.apps.train.app import TrainApp
 
-    app = TrainApplication(
+    app = TrainApp(
         model=args.model,
         data_dir=args.data_dir,
         output_dir=args.output_dir,
