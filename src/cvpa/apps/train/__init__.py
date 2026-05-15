@@ -3,7 +3,7 @@
 from argparse import Namespace
 
 
-def train_main(args: Namespace) -> None:
+def build_train_app(args: Namespace):
     assert isinstance(args.model, str)
     assert isinstance(args.data_dir, str)
     assert isinstance(args.output_dir, str)
@@ -17,7 +17,7 @@ def train_main(args: Namespace) -> None:
     # Do not change the import order!
     from cvpa.apps.train.app import TrainApp
 
-    app = TrainApp(
+    return TrainApp(
         model=args.model,
         data_dir=args.data_dir,
         output_dir=args.output_dir,
@@ -27,4 +27,7 @@ def train_main(args: Namespace) -> None:
         device=args.device,
         resume=args.resume,
     )
-    app.start()
+
+
+def train_main(args: Namespace) -> None:
+    build_train_app(args).start()

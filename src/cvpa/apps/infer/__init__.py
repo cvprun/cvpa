@@ -3,7 +3,7 @@
 from argparse import Namespace
 
 
-def infer_main(args: Namespace) -> None:
+def build_infer_app(args: Namespace):
     assert isinstance(args.model, str)
     assert isinstance(args.input, str)
     assert isinstance(args.output_dir, str)
@@ -15,7 +15,7 @@ def infer_main(args: Namespace) -> None:
     # Do not change the import order!
     from cvpa.apps.infer.app import InferApp
 
-    app = InferApp(
+    return InferApp(
         model=args.model,
         input_path=args.input,
         output_dir=args.output_dir,
@@ -23,4 +23,7 @@ def infer_main(args: Namespace) -> None:
         batch_size=args.batch_size,
         top_k=args.top_k,
     )
-    app.start()
+
+
+def infer_main(args: Namespace) -> None:
+    build_infer_app(args).start()

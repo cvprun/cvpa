@@ -200,6 +200,9 @@ class AgentConnection:
         obj.setdefault("ts", _now_iso())
         await self._ws_client.send_json(obj)
 
+    async def send_envelope(self, env: Envelope) -> None:
+        await self._send_envelope(env)
+
     async def _send_hello(self) -> None:
         await self._send_envelope(
             Envelope(
