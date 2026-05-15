@@ -1,67 +1,65 @@
 # -*- coding: utf-8 -*-
 
 from argparse import Namespace
-from asyncio.exceptions import CancelledError
 from unittest import TestCase, main
 from unittest.mock import MagicMock, patch
 
-from cvpa.apps import run_app
+from cvpa.apps import build_app, run_app
+from cvpa.apps.idle import IdleApp
+from cvpa.arguments import CMD_AGENT
+
+
+def _standalone_args(token: str = "") -> Namespace:
+    return Namespace(
+        cmd=CMD_AGENT,
+        token=token,
+        uri="ws://test",
+        use_uvloop=False,
+        debug=False,
+        slow_callback_duration=0.05,
+    )
+
+
+class BuildAppTestCase(TestCase):
+    def test_agent_returns_idle_app(self):
+        app = build_app(CMD_AGENT, _standalone_args())
+        self.assertIsInstance(app, IdleApp)
+
+    def test_unknown_cmd_raises(self):
+        with self.assertRaises(ValueError):
+            build_app("nonexistent_cmd", _standalone_args())
 
 
 class RunAppTestCase(TestCase):
-    def test_unknown_command(self):
-        result = run_app("nonexistent_cmd", Namespace())
+    def test_unknown_command_returns_one(self):
+        result = run_app("nonexistent_cmd", _standalone_args())
         self.assertEqual(result, 1)
 
-    @patch("cvpa.apps.cmd_apps")
-    def test_success(self, mock_apps):
-        mock_fn = MagicMock()
-        mock_apps.return_value = {"test": mock_fn}
-        result = run_app("test", Namespace())
+    @patch("cvpa.apps.StandaloneRuntime")
+    def test_standalone_path(self, mock_runtime_cls):
+        mock_runtime = MagicMock()
+        mock_runtime.execute.return_value = 0
+        mock_runtime_cls.return_value = mock_runtime
+
+        result = run_app(CMD_AGENT, _standalone_args(token=""))
         self.assertEqual(result, 0)
-        mock_fn.assert_called_once()
+        mock_runtime.execute.assert_called_once()
+        self.assertIsInstance(mock_runtime.execute.call_args.args[0], IdleApp)
 
-    @patch("cvpa.apps.cmd_apps")
-    def test_cancelled_error(self, mock_apps):
-        mock_fn = MagicMock(side_effect=CancelledError)
-        mock_apps.return_value = {"test": mock_fn}
-        result = run_app("test", Namespace())
+    @patch("cvpa.apps.ConnectedRuntime")
+    def test_connected_path_with_token(self, mock_runtime_cls):
+        mock_runtime = MagicMock()
+        mock_runtime.execute.return_value = 0
+        mock_runtime_cls.return_value = mock_runtime
+
+        args = _standalone_args(token="cvp_abc123_myslug")
+        result = run_app(CMD_AGENT, args)
         self.assertEqual(result, 0)
-
-    @patch("cvpa.apps.cmd_apps")
-    def test_keyboard_interrupt(self, mock_apps):
-        mock_fn = MagicMock(side_effect=KeyboardInterrupt)
-        mock_apps.return_value = {"test": mock_fn}
-        result = run_app("test", Namespace())
-        self.assertEqual(result, 0)
-
-    @patch("cvpa.apps.cmd_apps")
-    def test_interrupted_error(self, mock_apps):
-        mock_fn = MagicMock(side_effect=InterruptedError)
-        mock_apps.return_value = {"test": mock_fn}
-        result = run_app("test", Namespace())
-        self.assertEqual(result, 0)
-
-    @patch("cvpa.apps.cmd_apps")
-    def test_system_exit_zero(self, mock_apps):
-        mock_fn = MagicMock(side_effect=SystemExit(0))
-        mock_apps.return_value = {"test": mock_fn}
-        result = run_app("test", Namespace())
-        self.assertEqual(result, 0)
-
-    @patch("cvpa.apps.cmd_apps")
-    def test_system_exit_nonzero(self, mock_apps):
-        mock_fn = MagicMock(side_effect=SystemExit(1))
-        mock_apps.return_value = {"test": mock_fn}
-        result = run_app("test", Namespace())
-        self.assertEqual(result, 1)
-
-    @patch("cvpa.apps.cmd_apps")
-    def test_generic_exception(self, mock_apps):
-        mock_fn = MagicMock(side_effect=RuntimeError("boom"))
-        mock_apps.return_value = {"test": mock_fn}
-        result = run_app("test", Namespace())
-        self.assertEqual(result, 1)
+        mock_runtime_cls.assert_called_once()
+        kwargs = mock_runtime_cls.call_args.kwargs
+        self.assertEqual(kwargs["slug"], "myslug")
+        self.assertEqual(kwargs["token"], "cvp_abc123")
+        mock_runtime.execute.assert_called_once()
 
 
 if __name__ == "__main__":
