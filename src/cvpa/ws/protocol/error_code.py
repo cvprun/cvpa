@@ -15,3 +15,5 @@ class ErrorCode:
     INVALID_TICKET: Final[str] = "invalid_ticket"
     RATE_LIMITED: Final[str] = "rate_limited"
     INTERNAL: Final[str] = "internal"
+    VALIDATION_ERROR: Final[str] = "validation_error"
+    HANDLER_ERROR: Final[str] = "handler_error"
