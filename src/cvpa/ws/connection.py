@@ -30,6 +30,7 @@ from cvpa.ws.protocol.constants import (
     TYPE_SERVER_HELLO,
 )
 from cvpa.ws.protocol.envelope import Envelope
+from cvpa.ws.protocol.messages.heartbeat import HeartbeatPong
 from cvpa.ws.state_machine.event import AgentEvent
 from cvpa.ws.state_machine.machine import ConnectionStateMachine
 from cvpa.ws.state_machine.state import AgentState
@@ -149,6 +150,12 @@ class AgentConnection:
             self._hello_event.set()
 
     async def _on_heartbeat_pong(self, data: Dict[str, Any]) -> None:
+        try:
+            HeartbeatPong.model_validate(data.get("data") or {})
+        except ValueError:
+            if self._logger:
+                self._logger.warning(f"heartbeat.pong invalid payload: {data!r}")
+            return
         if self._sm.state is AgentState.ACTIVE:
             loop = get_running_loop()
             self._last_pong_monotonic = loop.time()
